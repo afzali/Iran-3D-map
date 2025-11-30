@@ -1,0 +1,490 @@
+<script lang="ts">
+import { MAP_CONFIG, BACKGROUND_COLORS, regionGroups } from '$lib/config';
+
+export let visible = true;
+export let mapComponent: any = null;
+
+let config = JSON.parse(JSON.stringify(MAP_CONFIG));
+let bgColors = JSON.parse(JSON.stringify(BACKGROUND_COLORS));
+
+// Helper function to handle input events
+function handleInput(path: string) {
+	return (e: Event) => {
+		const value = (e.target as HTMLInputElement).value;
+		updateConfig(path, value);
+	};
+}
+
+// Helper function to handle color input events
+function handleColorInput(callback: (value: string) => void) {
+	return (e: Event) => {
+		const value = (e.target as HTMLInputElement).value;
+		callback(value);
+	};
+}
+
+function updateConfig(path: string, value: string) {
+	const numValue = parseFloat(value);
+	console.log(`⚙️ updateConfig: path=${path}, value=${numValue}`);
+	
+	const keys = path.split('.');
+	let obj: any = config;
+	for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]];
+	obj[keys[keys.length - 1]] = numValue;
+	
+	let globalObj: any = MAP_CONFIG;
+	for (let i = 0; i < keys.length - 1; i++) globalObj = globalObj[keys[i]];
+	globalObj[keys[keys.length - 1]] = numValue;
+	
+	if (mapComponent?.applyConfigChanges) {
+		console.log(`📤 Calling applyConfigChanges for ${path}`);
+		mapComponent.applyConfigChanges(path, numValue);
+	} else {
+		console.warn(`⚠️ mapComponent.applyConfigChanges not available`);
+	}
+	config = config;
+}
+
+function updateBackground(type: string, value: string) {
+	console.log(`🎨 updateBackground called: type=${type}, value=${value}`);
+	(bgColors as any)[type] = value;
+	(BACKGROUND_COLORS as any)[type] = value;
+	
+	// Apply background changes immediately using CSS variables
+	if (typeof document !== 'undefined') {
+		if (type === 'primary') {
+			console.log(`✅ Setting --bg-primary to ${value}`);
+			// Update CSS variables on both html and body
+			document.documentElement.style.setProperty('--bg-primary', value);
+			document.body.style.setProperty('--bg-primary', value);
+			
+			// Update the gradient
+			document.body.style.background = `radial-gradient(ellipse at center, ${bgColors.secondary} 0%, ${value} 100%)`;
+			console.log(`✅ Updated body background gradient`);
+			
+			// Update Three.js scene background
+			if (mapComponent?.updateBackgroundColor) {
+				mapComponent.updateBackgroundColor('primary', value);
+			}
+		} else if (type === 'secondary') {
+			console.log(`✅ Setting --bg-secondary to ${value}`);
+			// Update CSS variables on both html and body
+			document.documentElement.style.setProperty('--bg-secondary', value);
+			document.body.style.setProperty('--bg-secondary', value);
+			
+			// Update the gradient
+			document.body.style.background = `radial-gradient(ellipse at center, ${value} 0%, ${bgColors.primary} 100%)`;
+			console.log(`✅ Updated body background gradient`);
+		}
+	}
+	bgColors = bgColors;
+	console.log(`📊 Current bgColors:`, bgColors);
+}
+
+function updateColor(region: string, value: string) {
+	// Update region color in real-time
+	if (mapComponent?.updateRegionColor) {
+		mapComponent.updateRegionColor(region, value);
+	}
+	
+	// Update local config
+	const color = parseInt(value.replace('#', ''), 16);
+	(regionGroups as any)[region].color = color;
+	config = config;
+}
+
+function updateWaterColor(waterKey: string, value: string) {
+	// Update water color in real-time
+	if (mapComponent?.updateWaterColor) {
+		mapComponent.updateWaterColor(waterKey, value);
+	}
+	
+	// Update local config
+	const color = parseInt(value.replace('#', ''), 16);
+	(config.waterColors as any)[waterKey] = color;
+	(MAP_CONFIG.waterColors as any)[waterKey] = color;
+	config = config;
+}
+
+function fixPositions() {
+	if (mapComponent?.fixProvincePositions) {
+		const fixed = mapComponent.fixProvincePositions();
+		alert(`✅ ${fixed} استان اصلاح شد`);
+	}
+}
+
+function exportConfig() {
+	const txt = `const MAP_CONFIG = ${JSON.stringify(MAP_CONFIG, null, 4)};`;
+	navigator.clipboard.writeText(txt).then(() => alert('✅ کپی شد!')).catch(() => alert('❌ خطا در کپی'));
+}
+
+function resetDefaults() {
+	if (confirm('بازگشت به پیش‌فرض؟')) location.reload();
+}
+</script>
+
+<button class="toggle-btn" class:open={visible} on:click={() => visible = !visible}>
+	{visible ? '✖ بستن' : '⚙️ تنظیمات'}
+</button>
+
+<div class="panel" class:hidden={!visible}>
+<h3 style="color: white; font-size: 20px;">⚙️ تنظیمات نقشه</h3>
+
+<h3>🏛️ استان‌ها - شکل 3D</h3>
+<div class="control-group">
+	<label><span class="value">{config.provinces.extrudeDepth}</span><span class="range">(10-50)</span>ارتفاع دیواره استان‌ها</label>
+	<input type="range" min="10" max="50" step="1" value={config.provinces.extrudeDepth} on:input={handleInput('provinces.extrudeDepth')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.bevelThickness}</span><span class="range">(1-5)</span>ضخامت Bevel</label>
+	<input type="range" min="1" max="5" step="0.5" value={config.provinces.bevelThickness} on:input={handleInput('provinces.bevelThickness')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.bevelSize}</span><span class="range">(1-4)</span>اندازه Bevel</label>
+	<input type="range" min="1" max="4" step="0.5" value={config.provinces.bevelSize} on:input={handleInput('provinces.bevelSize')} />
+</div>
+
+<h3>💎 استان‌ها - شیشه‌ای (عادی)</h3>
+<div class="control-group">
+	<label><span class="value">{config.provinces.defaultOpacity.toFixed(2)}</span><span class="range">(0-1)</span>شفافیت</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.provinces.defaultOpacity} on:input={handleInput('provinces.defaultOpacity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.defaultEmissiveIntensity.toFixed(2)}</span><span class="range">(0-0.5)</span>شدت نور داخلی</label>
+	<input type="range" min="0" max="0.5" step="0.01" value={config.provinces.defaultEmissiveIntensity} on:input={handleInput('provinces.defaultEmissiveIntensity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.metalness.toFixed(2)}</span><span class="range">(0-1)</span>فلزی بودن</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.provinces.metalness} on:input={handleInput('provinces.metalness')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.roughness.toFixed(2)}</span><span class="range">(0-1)</span>زبری سطح</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.provinces.roughness} on:input={handleInput('provinces.roughness')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.clearcoat.toFixed(2)}</span><span class="range">(0-1)</span>لایه شیشه‌ای</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.provinces.clearcoat} on:input={handleInput('provinces.clearcoat')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.clearcoatRoughness.toFixed(2)}</span><span class="range">(0-1)</span>زبری شیشه</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.provinces.clearcoatRoughness} on:input={handleInput('provinces.clearcoatRoughness')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.reflectivity.toFixed(2)}</span><span class="range">(0-1)</span>بازتاب نور</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.provinces.reflectivity} on:input={handleInput('provinces.reflectivity')} />
+</div>
+
+<h3>📐 استان‌ها - خطوط حاشیه</h3>
+<div class="control-group">
+	<label><span class="value">{config.provinces.borderOpacity.toFixed(2)}</span><span class="range">(0-1)</span>شفافیت خطوط</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.provinces.borderOpacity} on:input={handleInput('provinces.borderOpacity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.borderWidth.toFixed(1)}</span><span class="range">(1-5)</span>ضخامت خطوط</label>
+	<input type="range" min="1" max="5" step="0.5" value={config.provinces.borderWidth} on:input={handleInput('provinces.borderWidth')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.edgeAngle}</span><span class="range">(15-45)</span>زاویه تشخیص لبه</label>
+	<input type="range" min="15" max="45" step="1" value={config.provinces.edgeAngle} on:input={handleInput('provinces.edgeAngle')} />
+</div>
+
+<h3>✨ استان‌ها - هاور</h3>
+<div class="control-group">
+	<label><span class="value">{config.provinces.hoverHeight}</span><span class="range">(20-100)</span>ارتفاع بالا آمدن</label>
+	<input type="range" min="20" max="100" step="5" value={config.provinces.hoverHeight} on:input={handleInput('provinces.hoverHeight')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.hoverOpacity.toFixed(2)}</span><span class="range">(0-1)</span>شفافیت هاور</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.provinces.hoverOpacity} on:input={handleInput('provinces.hoverOpacity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.hoverEmissiveIntensity.toFixed(2)}</span><span class="range">(0-1.5)</span>شدت نور هاور</label>
+	<input type="range" min="0" max="1.5" step="0.05" value={config.provinces.hoverEmissiveIntensity} on:input={handleInput('provinces.hoverEmissiveIntensity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.hoverScale.toFixed(2)}</span><span class="range">(1-1.1)</span>بزرگ‌نمایی</label>
+	<input type="range" min="1" max="1.1" step="0.01" value={config.provinces.hoverScale} on:input={handleInput('provinces.hoverScale')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.hoverAnimationDuration}</span><span class="range">(200-1000)</span>مدت انیمیشن (ms)</label>
+	<input type="range" min="200" max="1000" step="50" value={config.provinces.hoverAnimationDuration} on:input={handleInput('provinces.hoverAnimationDuration')} />
+</div>
+
+<h3>🎨 استان‌ها - پترن</h3>
+<div class="control-group">
+	<label><span class="value">{config.provinces.patternOpacity.toFixed(2)}</span><span class="range">(0-1)</span>شفافیت پترن</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.provinces.patternOpacity} on:input={handleInput('provinces.patternOpacity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.patternLineOpacity.toFixed(2)}</span><span class="range">(0-0.3)</span>شفافیت خطوط</label>
+	<input type="range" min="0" max="0.3" step="0.01" value={config.provinces.patternLineOpacity} on:input={handleInput('provinces.patternLineOpacity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.patternDotOpacity.toFixed(2)}</span><span class="range">(0-0.2)</span>شفافیت نقطه‌ها</label>
+	<input type="range" min="0" max="0.2" step="0.01" value={config.provinces.patternDotOpacity} on:input={handleInput('provinces.patternDotOpacity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.patternLineSpacing}</span><span class="range">(2-8)</span>فاصله خطوط</label>
+	<input type="range" min="2" max="8" step="1" value={config.provinces.patternLineSpacing} on:input={handleInput('provinces.patternLineSpacing')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.patternDotSpacing}</span><span class="range">(4-16)</span>فاصله نقطه‌ها</label>
+	<input type="range" min="4" max="16" step="1" value={config.provinces.patternDotSpacing} on:input={handleInput('provinces.patternDotSpacing')} />
+</div>
+
+<h3>🌊 دریاها - شکل و مواد</h3>
+<div class="control-group">
+	<label><span class="value">{config.water.extrudeDepth}</span><span class="range">(5-50)</span>ارتفاع دیواره دریاها</label>
+	<input type="range" min="5" max="50" step="1" value={config.water.extrudeDepth} on:input={handleInput('water.extrudeDepth')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.water.opacity.toFixed(2)}</span><span class="range">(0-1)</span>شفافیت</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.water.opacity} on:input={handleInput('water.opacity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.water.emissiveIntensity.toFixed(2)}</span><span class="range">(0-0.5)</span>شدت نور داخلی</label>
+	<input type="range" min="0" max="0.5" step="0.01" value={config.water.emissiveIntensity} on:input={handleInput('water.emissiveIntensity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.water.clearcoat.toFixed(2)}</span><span class="range">(0-1)</span>لایه شیشه‌ای</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.water.clearcoat} on:input={handleInput('water.clearcoat')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.water.borderOpacity.toFixed(2)}</span><span class="range">(0-1)</span>شفافیت خطوط</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.water.borderOpacity} on:input={handleInput('water.borderOpacity')} />
+</div>
+
+<h3>🌊 رنگ دریاها</h3>
+<div style="font-size: 11px; color: rgba(0,255,0,0.6); margin-bottom: 10px;">✅ تغییر رنگ‌ها فوری اعمال می‌شود</div>
+<div class="color-group">
+	<input type="color" value="#{config.waterColors.caspian.toString(16).padStart(6, '0')}" on:change={handleColorInput((v) => updateWaterColor('caspian', v))} />
+	<label>دریای خزر</label>
+</div>
+<div class="color-group">
+	<input type="color" value="#{config.waterColors.southWaters.toString(16).padStart(6, '0')}" on:change={handleColorInput((v) => updateWaterColor('southWaters', v))} />
+	<label>خلیج فارس و دریای عمان</label>
+</div>
+<div class="color-group">
+	<input type="color" value="#{config.waterColors.urmia.toString(16).padStart(6, '0')}" on:change={handleColorInput((v) => updateWaterColor('urmia', v))} />
+	<label>دریاچه ارومیه</label>
+</div>
+<div class="color-group">
+	<input type="color" value="#{config.waterColors.jazmourian.toString(16).padStart(6, '0')}" on:change={handleColorInput((v) => updateWaterColor('jazmourian', v))} />
+	<label>دریاچه جازموریان</label>
+</div>
+
+<h3>💫 افکت Bloom (گلو)</h3>
+<div class="control-group">
+	<label><span class="value">{config.bloom.strength.toFixed(1)}</span><span class="range">(0-3)</span>قدرت گلو</label>
+	<input type="range" min="0" max="3" step="0.1" value={config.bloom.strength} on:input={handleInput('bloom.strength')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.bloom.radius.toFixed(2)}</span><span class="range">(0-1)</span>شعاع گلو</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.bloom.radius} on:input={handleInput('bloom.radius')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.bloom.threshold.toFixed(2)}</span><span class="range">(0-1)</span>آستانه روشنایی</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.bloom.threshold} on:input={handleInput('bloom.threshold')} />
+</div>
+
+<h3>📷 دوربین</h3>
+<div class="control-group">
+	<label><span class="value">{config.camera.fov}</span><span class="range">(30-75)</span>زاویه دید</label>
+	<input type="range" min="30" max="75" step="5" value={config.camera.fov} on:input={handleInput('camera.fov')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.camera.positionY}</span><span class="range">(300-800)</span>ارتفاع</label>
+	<input type="range" min="300" max="800" step="50" value={config.camera.positionY} on:input={handleInput('camera.positionY')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.camera.positionZ}</span><span class="range">(500-1200)</span>فاصله</label>
+	<input type="range" min="500" max="1200" step="50" value={config.camera.positionZ} on:input={handleInput('camera.positionZ')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.camera.autoRotateSpeed.toFixed(1)}</span><span class="range">(0-2)</span>سرعت چرخش</label>
+	<input type="range" min="0" max="2" step="0.1" value={config.camera.autoRotateSpeed} on:input={handleInput('camera.autoRotateSpeed')} />
+</div>
+
+<h3>💡 نورپردازی</h3>
+<div class="control-group">
+	<label><span class="value">{config.lighting.ambientIntensity.toFixed(2)}</span><span class="range">(0-1)</span>نور محیطی</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.lighting.ambientIntensity} on:input={handleInput('lighting.ambientIntensity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.lighting.directionalIntensity.toFixed(2)}</span><span class="range">(0-2)</span>نور جهت‌دار</label>
+	<input type="range" min="0" max="2" step="0.1" value={config.lighting.directionalIntensity} on:input={handleInput('lighting.directionalIntensity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.lighting.rimLight1Intensity.toFixed(2)}</span><span class="range">(0-2)</span>نور لبه 1</label>
+	<input type="range" min="0" max="2" step="0.1" value={config.lighting.rimLight1Intensity} on:input={handleInput('lighting.rimLight1Intensity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.lighting.rimLight2Intensity.toFixed(2)}</span><span class="range">(0-2)</span>نور لبه 2</label>
+	<input type="range" min="0" max="2" step="0.1" value={config.lighting.rimLight2Intensity} on:input={handleInput('lighting.rimLight2Intensity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.lighting.rimLight3Intensity.toFixed(2)}</span><span class="range">(0-2)</span>نور لبه 3</label>
+	<input type="range" min="0" max="2" step="0.1" value={config.lighting.rimLight3Intensity} on:input={handleInput('lighting.rimLight3Intensity')} />
+</div>
+
+<h3>🎨 پس‌زمینه</h3>
+<div class="color-group">
+	<input type="color" value={bgColors.primary} on:change={handleColorInput((v) => updateBackground('primary', v))} />
+	<label>رنگ اصلی پس‌زمینه</label>
+</div>
+<div class="color-group">
+	<input type="color" value={bgColors.secondary} on:change={handleColorInput((v) => updateBackground('secondary', v))} />
+	<label>رنگ ثانویه گرادیانت</label>
+</div>
+<div class="control-group">
+	<label><span class="value">{config.background.vignette.toFixed(2)}</span><span class="range">(0-1)</span>شدت Vignette</label>
+	<input type="range" min="0" max="1" step="0.05" value={config.background.vignette} on:input={handleInput('background.vignette')} />
+</div>
+
+<h3>🌈 رنگ مناطق</h3>
+<div style="font-size: 11px; color: rgba(0,255,0,0.6); margin-bottom: 10px;">✅ تغییر رنگ‌ها فوری اعمال می‌شود</div>
+{#each Object.entries(regionGroups) as [key, region]}
+<div class="color-group">
+	<input type="color" value="#{region.color.toString(16).padStart(6, '0')}" on:change={handleColorInput((v) => updateColor(key, v))} />
+	<label>{region.name}</label>
+</div>
+{/each}
+
+<button class="action-btn" on:click={fixPositions}>🔧 اصلاح موقعیت استان‌ها</button>
+<button class="action-btn" on:click={exportConfig}>📋 کپی تنظیمات</button>
+<button class="reset-btn" on:click={resetDefaults}>🔄 بازگشت به پیش‌فرض</button>
+</div>
+
+
+<style>
+.toggle-btn {
+	position: fixed; left: 20px; top: 20px;
+	background: rgba(0, 255, 255, 0.2);
+	border: 2px solid rgba(0, 255, 255, 0.5);
+	color: #00ffff; padding: 10px 15px;
+	border-radius: 8px; cursor: pointer; z-index: 999;
+	font-family: 'vazirmatn', Tahoma, sans-serif;
+	font-size: 14px; font-weight: 600;
+	backdrop-filter: blur(10px); transition: all 0.3s;
+}
+.toggle-btn:hover {
+	background: rgba(0, 255, 255, 0.4);
+	box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+}
+.toggle-btn.open { left: 390px; }
+
+.panel {
+	position: fixed; left: 20px; top: 20px;
+	width: 350px; max-height: 90vh;
+	background: rgba(5, 10, 20, 0.95);
+	backdrop-filter: blur(20px);
+	border: 2px solid rgba(0, 255, 255, 0.3);
+	border-radius: 12px; padding: 20px; z-index: 1000;
+	overflow-y: auto;
+	box-shadow: 0 0 40px rgba(0, 255, 255, 0.2);
+	transition: transform 0.3s ease;
+	font-family: 'vazirmatn', Tahoma, sans-serif;
+	direction: rtl;
+}
+.panel.hidden { transform: translateX(-400px); }
+.panel::-webkit-scrollbar { width: 8px; }
+.panel::-webkit-scrollbar-track {
+	background: rgba(0, 0, 0, 0.3);
+	border-radius: 4px;
+}
+.panel::-webkit-scrollbar-thumb {
+	background: rgba(0, 255, 255, 0.5);
+	border-radius: 4px;
+}
+
+h3 {
+	color: #00ffff; font-size: 18px;
+	margin: 15px 0 10px 0; padding-bottom: 8px;
+	border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+	text-shadow: 0 0 10px currentColor;
+}
+h3:first-child { margin-top: 0; }
+
+.control-group { margin-bottom: 15px; }
+.control-group label {
+	display: block;
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 12px; margin-bottom: 5px;
+	text-align: right;
+}
+.value {
+	display: inline-block; float: left;
+	color: #00ffff; font-size: 11px; font-weight: bold;
+}
+.range {
+	display: inline-block; float: left;
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 10px; margin-right: 8px;
+}
+
+input[type="range"] {
+	width: 100%; height: 4px;
+	background: rgba(0, 255, 255, 0.2);
+	border-radius: 2px; outline: none;
+	-webkit-appearance: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	width: 14px; height: 14px;
+	background: #00ffff; border-radius: 50%;
+	cursor: pointer;
+	box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+}
+input[type="range"]::-moz-range-thumb {
+	width: 14px; height: 14px;
+	background: #00ffff; border-radius: 50%;
+	cursor: pointer; border: none;
+	box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+}
+
+.color-group {
+	display: flex; gap: 10px;
+	align-items: center; margin-bottom: 10px;
+}
+.color-group input[type="color"] {
+	width: 50px; height: 30px;
+	border: 2px solid rgba(0, 255, 255, 0.5);
+	border-radius: 5px;
+	background: transparent; cursor: pointer;
+}
+.color-group label {
+	flex: 1; margin: 0; text-align: right;
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 12px;
+}
+
+.action-btn {
+	width: 100%;
+	background: linear-gradient(135deg, rgba(0, 255, 200, 0.3), rgba(0, 200, 255, 0.2));
+	border: 2px solid rgba(0, 255, 200, 0.5);
+	color: #00ffcc; padding: 10px;
+	border-radius: 8px; cursor: pointer;
+	font-family: 'vazirmatn', Tahoma, sans-serif;
+	font-size: 13px; font-weight: 600;
+	margin-top: 10px; transition: all 0.3s;
+}
+.action-btn:hover {
+	background: linear-gradient(135deg, rgba(0, 255, 200, 0.5), rgba(0, 200, 255, 0.3));
+	box-shadow: 0 0 20px rgba(0, 255, 200, 0.6);
+}
+
+.reset-btn {
+	width: 100%;
+	background: linear-gradient(135deg, rgba(255, 100, 100, 0.3), rgba(255, 50, 50, 0.2));
+	border: 2px solid rgba(255, 100, 100, 0.5);
+	color: #ff6666; padding: 10px;
+	border-radius: 8px; cursor: pointer;
+	font-family: 'vazirmatn', Tahoma, sans-serif;
+	font-size: 13px; font-weight: 600;
+	margin-top: 15px; transition: all 0.3s;
+}
+.reset-btn:hover {
+	background: linear-gradient(135deg, rgba(255, 100, 100, 0.5), rgba(255, 50, 50, 0.3));
+	box-shadow: 0 0 20px rgba(255, 100, 100, 0.6);
+}
+</style>

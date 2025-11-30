@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نقشه سه‌بعدی واقعی ایران</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 50%, #0a0e1a 100%);
+            overflow: hidden;
+        }
+        #container { width: 100vw; height: 100vh; position: relative; }
+        #info-panel {
+            position: absolute; top: 30px; right: 30px;
+            background: rgba(5, 10, 20, 0.95); backdrop-filter: blur(15px);
+            padding: 25px 30px; border-radius: 15px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            color: #00ffff; min-width: 280px; z-index: 100;
+        }
+        #province-name {
+            font-size: 28px; font-weight: bold; margin-bottom: 10px;
+            text-shadow: 0 0 20px currentColor;
+        }
+        .controls {
+            position: absolute; bottom: 30px; left: 50%;
+            transform: translateX(-50%); display: flex; gap: 15px;
+            z-index: 100;
+        }
+        .control-btn {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 200, 255, 0.1));
+            border: 2px solid rgba(0, 255, 255, 0.5); color: #00ffff;
+            padding: 12px 24px; border-radius: 10px; cursor: pointer;
+            font-size: 14px; font-weight: 600; transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .control-btn:hover {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.4), rgba(0, 200, 255, 0.2));
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+        }
+        #loading {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); color: #00ffff;
+            font-size: 24px; text-align: center; z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <div id="loading">در حال بارگذاری نقشه...</div>
+    <div id="info-panel">
+        <div id="province-name">نقشه سه‌بعدی ایران</div>
+        <div id="province-info">موس را روی استان‌ها حرکت دهید</div>
+    </div>
+    <div class="controls">
+        <button class="control-btn" onclick="toggleRotation()">توقف چرخش</button>
+        <button class="control-btn" onclick="resetCamera()">بازنشانی</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        let scene, camera, renderer, controls;
+        let provinces = [];
+        let hoveredProvince = null;
+        let autoRotate = true;
+
+        // Province data with colors matching original map
+        const provinceData = {
+            'tehran': { name: 'تهران', color: 0xffdd00 },
+            'alborz': { name: 'البرز', color: 0xaaff00 },
+            'qom': { name: 'قم', color: 0xffd700 },
+            'markazi': { name: 'مرکزی', color: 0xffcc00 },
+            'semnan': { name: 'سمنان', color: 0x88ff00 },
+            'hamadan': { name: 'همدان', color: 0xffc800 },
+            'isfahan': { name: 'اصفهان', color: 0xffb800 },
+            'chahar-mahaal-bakhtiari': { name: 'چهارمحال و بختیاری', color: 0xffa500 },
+            'kohgiluyeh-boyer-ahmad': { name: 'کهگیلویه و بویراحمد', color: 0xff9500 },
+            'azerbaijan-east': { name: 'آذربایجان شرقی', color: 0x00d4ff },
+            'azerbaijan-west': { name: 'آذربایجان غربی', color: 0x00bfff },
+            'ardabil': { name: 'اردبیل', color: 0x00e5ff },
+            'gilan': { name: 'گیلان', color: 0x00c8ff },
+            'mazandaran': { name: 'مازندران', color: 0x00d9ff },
+            'golestan': { name: 'گلستان', color: 0x00ccff },
+            'zanjan': { name: 'زنجان', color: 0x00b8ff },
+            'qazvin': { name: 'قزوین', color: 0x00d0ff },
+            'kurdistan': { name: 'کردستان', color: 0x00bbff },
+            'kermanshah': { name: 'کرمانشاه', color: 0x00c4ff },
+            'ilam': { name: 'ایلام', color: 0x00b0ff },
+            'lorestan': { name: 'لرستان', color: 0x00dcff },
+            'khuzestan': { name: 'خوزستان', color: 0x00a8ff },
+            'khorasan-north': { name: 'خراسان شمالی', color: 0xff6b9d },
+            'khorasan-razavi': { name: 'خراسان رضوی', color: 0xff5588 },
+            'khorasan-south': { name: 'خراسان جنوبی', color: 0xff4477 },
+            'sistan-baluchestan': { name: 'سیستان و بلوچستان', color: 0xff3366 },
+            'kerman': { name: 'کرمان', color: 0xff5577 },
+            'yazd': { name: 'یزد', color: 0xff7788 },
+            'fars': { name: 'فارس', color: 0xff8844 },
+            'bushehr': { name: 'بوشهر', color: 0xff9955 },
+            'hormozgan': { name: 'هرمزگان', color: 0xff6655 }
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x0a0e1a, 0.0005);
+
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 2000);
+            camera.position.set(0, 400, 600);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            document.getElementById('container').appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.5;
+
+            setupLights();
+            createProvincesFromSVG();
+            setupInteraction();
+
+            window.addEventListener('resize', onWindowResize);
+            document.getElementById('loading').style.display = 'none';
+            animate();
+        }
+
+        function setupLights() {
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(100, 200, 100);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            const pointLight1 = new THREE.PointLight(0x00ffff, 1, 600);
+            pointLight1.position.set(0, 150, 0);
+            scene.add(pointLight1);
+
+            const pointLight2 = new THREE.PointLight(0xff00ff, 0.6, 600);
+            pointLight2.position.set(-200, 100, 200);
+            scene.add(pointLight2);
+        }
+
+        function createProvincesFromSVG() {
+            Object.keys(provinceData).forEach((key, index) => {
+                const data = provinceData[key];
+                const shape = parseSVGPath(data.path);
+                
+                if (shape) {
+                    createProvince3D(shape, key, data, index);
+                }
+            });
+        }
+
+        function parseSVGPath(pathString) {
+            const shape = new THREE.Shape();
+            const commands = pathString.match(/[MLHVCSQTAZ][^MLHVCSQTAZ]*/gi);
+            
+            if (!commands) return null;
+
+            let currentX = 0, currentY = 0;
+            let startX = 0, startY = 0;
+
+            commands.forEach(cmd => {
+                const type = cmd[0];
+                const coords = cmd.slice(1).trim().split(/[\s,]+/).map(Number);
+
+                switch (type.toUpperCase()) {
+                    case 'M':
+                        currentX = coords[0];
+                        currentY = coords[1];
+                        startX = currentX;
+                        startY = currentY;
+                        shape.moveTo(currentX * 0.8, currentY * 0.8);
+                        break;
+                    case 'L':
+                        currentX = coords[0];
+                        currentY = coords[1];
+                        shape.lineTo(currentX * 0.8, currentY * 0.8);
+                        break;
+                    case 'C':
+                        shape.bezierCurveTo(
+                            coords[0] * 0.8, coords[1] * 0.8,
+                            coords[2] * 0.8, coords[3] * 0.8,
+                            coords[4] * 0.8, coords[5] * 0.8
+                        );
+                        currentX = coords[4];
+                        currentY = coords[5];
+                        break;
+                    case 'Z':
+                        shape.lineTo(startX * 0.8, startY * 0.8);
+                        break;
+                }
+            });
+
+            return shape;
+        }
+
+        function createProvince3D(shape, id, data, index) {
+            const extrudeSettings = {
+                depth: 25,
+                bevelEnabled: true,
+                bevelThickness: 3,
+                bevelSize: 2,
+                bevelSegments: 5
+            };
+
+            const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            geometry.center();
+
+            const material = new THREE.MeshPhongMaterial({
+                color: data.color,
+                emissive: data.color,
+                emissiveIntensity: 0.3,
+                shininess: 100,
+                transparent: true,
+                opacity: 0.9,
+                side: THREE.DoubleSide
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            
+            // Position provinces in a grid for now
+            const gridSize = 3;
+            const spacing = 150;
+            const row = Math.floor(index / gridSize);
+            const col = index % gridSize;
+            
+            mesh.position.set(
+                (col - gridSize/2) * spacing,
+                0,
+                (row - gridSize/2) * spacing
+            );
+            mesh.rotation.x = -Math.PI / 2;
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+
+            // Add glowing edges
+            const edges = new THREE.EdgesGeometry(geometry);
+            const lineMaterial = new THREE.LineBasicMaterial({
+                color: data.color,
+                transparent: true,
+                opacity: 0.7
+            });
+            const wireframe = new THREE.LineSegments(edges, lineMaterial);
+            mesh.add(wireframe);
+
+            scene.add(mesh);
+
+            provinces.push({
+                id: id,
+                mesh: mesh,
+                data: data,
+                originalY: 0,
+                wireframe: wireframe
+            });
+        }
+
+        function setupInteraction() {
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            renderer.domElement.addEventListener('mousemove', (event) => {
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(provinces.map(p => p.mesh));
+
+                if (intersects.length > 0) {
+                    const intersected = intersects[0].object;
+                    const province = provinces.find(p => p.mesh === intersected);
+                    
+                    if (province && hoveredProvince !== province) {
+                        if (hoveredProvince) resetProvince(hoveredProvince);
+                        hoveredProvince = province;
+                        highlightProvince(province);
+                    }
+                } else {
+                    if (hoveredProvince) {
+                        resetProvince(hoveredProvince);
+                        hoveredProvince = null;
+                        updateInfo(null);
+                    }
+                }
+            });
+        }
+
+        function highlightProvince(province) {
+            animateValue(province.mesh.position, 'y', 40, 400);
+            animateValue(province.mesh.material, 'emissiveIntensity', 1, 300);
+            animateValue(province.mesh.material, 'opacity', 1, 300);
+            animateValue(province.wireframe.material, 'opacity', 1, 300);
+            updateInfo(province);
+        }
+
+        function resetProvince(province) {
+            animateValue(province.mesh.position, 'y', province.originalY, 300);
+            animateValue(province.mesh.material, 'emissiveIntensity', 0.3, 300);
+            animateValue(province.mesh.material, 'opacity', 0.9, 300);
+            animateValue(province.wireframe.material, 'opacity', 0.7, 300);
+        }
+
+        function updateInfo(province) {
+            const nameEl = document.getElementById('province-name');
+            const infoEl = document.getElementById('province-info');
+            
+            if (province) {
+                nameEl.textContent = province.data.name;
+                nameEl.style.color = '#' + province.data.color.toString(16).padStart(6, '0');
+                infoEl.textContent = 'استان ' + province.data.name;
+            } else {
+                nameEl.textContent = 'نقشه سه‌بعدی ایران';
+                nameEl.style.color = '#00ffff';
+                infoEl.textContent = 'موس را روی استان‌ها حرکت دهید';
+            }
+        }
+
+        function animateValue(obj, prop, target, duration) {
+            const start = obj[prop];
+            const startTime = Date.now();
+
+            function update() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                
+                obj[prop] = start + (target - start) * eased;
+                
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            update();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (autoRotate) controls.autoRotate = true;
+            else controls.autoRotate = false;
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        function toggleRotation() {
+            autoRotate = !autoRotate;
+            event.target.textContent = autoRotate ? 'توقف چرخش' : 'شروع چرخش';
+        }
+
+        function resetCamera() {
+            animateValue(camera.position, 'x', 0, 1000);
+            animateValue(camera.position, 'y', 400, 1000);
+            animateValue(camera.position, 'z', 600, 1000);
+            controls.target.set(0, 0, 0);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+
+        function createProvincesFromSVG() {
+            // Extract SVG paths from the original iranmap.html
+            fetch('iranmap.html')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const paths = doc.querySelectorAll('.province path');
+                    
+                    paths.forEach((pathEl, index) => {
+                        const className = pathEl.getAttribute('class');
+                        const pathData = pathEl.getAttribute('d');
+                        
+                        if (provinceData[className] && pathData) {
+                            const shape = parseSVGPath(pathData);
+                            if (shape) {
+                                createProvince3D(shape, className, provinceData[className], index);
+                            }
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.log('Using sample provinces');
+                    // Fallback to sample data
+                    Object.keys(provinceData).forEach((key, index) => {
+                        createSampleProvince(key, provinceData[key], index);
+                    });
+                });
+        }
+
+        function parseSVGPath(pathString) {
+            const shape = new THREE.Shape();
+            const commands = pathString.match(/[MLHVCSQTAZ][^MLHVCSQTAZ]*/gi);
+            
+            if (!commands) return null;
+
+            let currentX = 0, currentY = 0;
+            let startX = 0, startY = 0;
+            const scale = 0.5; // Scale down the map
+
+            try {
+                commands.forEach(cmd => {
+                    const type = cmd[0].toUpperCase();
+                    const coords = cmd.slice(1).trim().split(/[\s,]+/).filter(c => c).map(Number);
+
+                    switch (type) {
+                        case 'M':
+                            currentX = coords[0];
+                            currentY = coords[1];
+                            startX = currentX;
+                            startY = currentY;
+                            shape.moveTo(currentX * scale, -currentY * scale);
+                            break;
+                        case 'L':
+                            for (let i = 0; i < coords.length; i += 2) {
+                                currentX = coords[i];
+                                currentY = coords[i + 1];
+                                shape.lineTo(currentX * scale, -currentY * scale);
+                            }
+                            break;
+                        case 'C':
+                            for (let i = 0; i < coords.length; i += 6) {
+                                shape.bezierCurveTo(
+                                    coords[i] * scale, -coords[i + 1] * scale,
+                                    coords[i + 2] * scale, -coords[i + 3] * scale,
+                                    coords[i + 4] * scale, -coords[i + 5] * scale
+                                );
+                                currentX = coords[i + 4];
+                                currentY = coords[i + 5];
+                            }
+                            break;
+                        case 'Z':
+                            shape.lineTo(startX * scale, -startY * scale);
+                            break;
+                    }
+                });
+                return shape;
+            } catch (e) {
+                console.error('Error parsing path:', e);
+                return null;
+            }
+        }
+
+        function createProvince3D(shape, id, data, index) {
+            const extrudeSettings = {
+                depth: 20,
+                bevelEnabled: true,
+                bevelThickness: 2,
+                bevelSize: 1.5,
+                bevelSegments: 3
+            };
+
+            const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            geometry.center();
+
+            const material = new THREE.MeshPhongMaterial({
+                color: data.color,
+                emissive: data.color,
+                emissiveIntensity: 0.3,
+                shininess: 100,
+                transparent: true,
+                opacity: 0.9,
+                side: THREE.DoubleSide
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.rotation.x = -Math.PI / 2;
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+
+            // Add glowing edges
+            const edges = new THREE.EdgesGeometry(geometry);
+            const lineMaterial = new THREE.LineBasicMaterial({
+                color: data.color,
+                transparent: true,
+                opacity: 0.7,
+                linewidth: 2
+            });
+            const wireframe = new THREE.LineSegments(edges, lineMaterial);
+            mesh.add(wireframe);
+
+            scene.add(mesh);
+
+            provinces.push({
+                id: id,
+                mesh: mesh,
+                data: data,
+                originalY: 0,
+                wireframe: wireframe
+            });
+        }
+
+        function createSampleProvince(id, data, index) {
+            // Fallback: create simple shapes
+            const points = 6 + Math.floor(Math.random() * 4);
+            const shape = new THREE.Shape();
+            const size = 25 + Math.random() * 20;
+
+            for (let i = 0; i < points; i++) {
+                const angle = (i / points) * Math.PI * 2;
+                const r = size * (0.7 + Math.random() * 0.6);
+                const px = Math.cos(angle) * r;
+                const py = Math.sin(angle) * r;
+                
+                if (i === 0) shape.moveTo(px, py);
+                else shape.lineTo(px, py);
+            }
+            shape.closePath();
+
+            createProvince3D(shape, id, data, index);
+        }
+
+        function setupInteraction() {
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            renderer.domElement.addEventListener('mousemove', (event) => {
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(provinces.map(p => p.mesh));
+
+                if (intersects.length > 0) {
+                    const intersected = intersects[0].object;
+                    const province = provinces.find(p => p.mesh === intersected);
+                    
+                    if (province && hoveredProvince !== province) {
+                        if (hoveredProvince) resetProvince(hoveredProvince);
+                        hoveredProvince = province;
+                        highlightProvince(province);
+                    }
+                } else {
+                    if (hoveredProvince) {
+                        resetProvince(hoveredProvince);
+                        hoveredProvince = null;
+                        updateInfo(null);
+                    }
+                }
+            });
+        }
+
+        function highlightProvince(province) {
+            animateValue(province.mesh.position, 'y', 35, 400);
+            animateValue(province.mesh.material, 'emissiveIntensity', 1.2, 300);
+            animateValue(province.mesh.material, 'opacity', 1, 300);
+            animateValue(province.wireframe.material, 'opacity', 1, 300);
+            animateValue(province.mesh.scale, 'x', 1.03, 400);
+            animateValue(province.mesh.scale, 'y', 1.03, 400);
+            animateValue(province.mesh.scale, 'z', 1.03, 400);
+            updateInfo(province);
+        }
+
+        function resetProvince(province) {
+            animateValue(province.mesh.position, 'y', province.originalY, 300);
+            animateValue(province.mesh.material, 'emissiveIntensity', 0.3, 300);
+            animateValue(province.mesh.material, 'opacity', 0.9, 300);
+            animateValue(province.wireframe.material, 'opacity', 0.7, 300);
+            animateValue(province.mesh.scale, 'x', 1, 300);
+            animateValue(province.mesh.scale, 'y', 1, 300);
+            animateValue(province.mesh.scale, 'z', 1, 300);
+        }
+
+        function updateInfo(province) {
+            const nameEl = document.getElementById('province-name');
+            const infoEl = document.getElementById('province-info');
+            
+            if (province) {
+                nameEl.textContent = province.data.name;
+                nameEl.style.color = '#' + province.data.color.toString(16).padStart(6, '0');
+                infoEl.textContent = 'استان ' + province.data.name + ' - کلیک برای اطلاعات بیشتر';
+            } else {
+                nameEl.textContent = 'نقشه سه‌بعدی ایران';
+                nameEl.style.color = '#00ffff';
+                infoEl.textContent = 'موس را روی استان‌ها حرکت دهید';
+            }
+        }
+
+        function animateValue(obj, prop, target, duration) {
+            const start = obj[prop];
+            const startTime = Date.now();
+
+            function update() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                
+                obj[prop] = start + (target - start) * eased;
+                
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            update();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (autoRotate) controls.autoRotate = true;
+            else controls.autoRotate = false;
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        function toggleRotation() {
+            autoRotate = !autoRotate;
+            event.target.textContent = autoRotate ? 'توقف چرخش' : 'شروع چرخش';
+        }
+
+        function resetCamera() {
+            animateValue(camera.position, 'x', 0, 1000);
+            animateValue(camera.position, 'y', 400, 1000);
+            animateValue(camera.position, 'z', 600, 1000);
+            controls.target.set(0, 0, 0);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
