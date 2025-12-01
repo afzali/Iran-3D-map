@@ -1,5 +1,5 @@
 <script lang="ts">
-import { MAP_CONFIG, BACKGROUND_COLORS, regionGroups } from '$lib/config';
+import { MAP_CONFIG, BACKGROUND_COLORS, regionGroups, provinceNames, provinceColors } from '$lib/config';
 
 export let visible = true;
 export let mapComponent: any = null;
@@ -13,6 +13,23 @@ function handleInput(path: string) {
 		const value = (e.target as HTMLInputElement).value;
 		updateConfig(path, value);
 	};
+}
+
+// Helper function to handle checkbox events
+function handleCheckbox(path: string, checked: boolean) {
+	const keys = path.split('.');
+	let obj: any = config;
+	for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]];
+	obj[keys[keys.length - 1]] = checked;
+	
+	let globalObj: any = MAP_CONFIG;
+	for (let i = 0; i < keys.length - 1; i++) globalObj = globalObj[keys[i]];
+	globalObj[keys[keys.length - 1]] = checked;
+	
+	if (mapComponent?.applyConfigChanges) {
+		mapComponent.applyConfigChanges(path, checked);
+	}
+	config = config;
 }
 
 // Helper function to handle color input events
@@ -106,6 +123,48 @@ function updateWaterColor(waterKey: string, value: string) {
 	config = config;
 }
 
+function updateProvinceColor(provinceKey: string, value: string) {
+	// Update individual province color in real-time
+	if (mapComponent?.updateProvinceColor) {
+		mapComponent.updateProvinceColor(provinceKey, value);
+	}
+	config = config;
+}
+
+function updateBorderColor(type: string, value: string) {
+	// Update border color for provinces or water
+	const color = parseInt(value.replace('#', ''), 16);
+	
+	if (type === 'provinces') {
+		(config.provinces as any).borderColor = color;
+		(MAP_CONFIG.provinces as any).borderColor = color;
+	} else if (type === 'water') {
+		(config.water as any).borderColor = color;
+		(MAP_CONFIG.water as any).borderColor = color;
+	}
+	
+	if (mapComponent?.applyConfigChanges) {
+		mapComponent.applyConfigChanges(`${type}.borderColor`, color);
+	}
+	config = config;
+}
+
+function clearBorderColor(type: string) {
+	// Clear custom border color (use default)
+	if (type === 'provinces') {
+		(config.provinces as any).borderColor = null;
+		(MAP_CONFIG.provinces as any).borderColor = null;
+	} else if (type === 'water') {
+		(config.water as any).borderColor = null;
+		(MAP_CONFIG.water as any).borderColor = null;
+	}
+	
+	if (mapComponent?.applyConfigChanges) {
+		mapComponent.applyConfigChanges(`${type}.borderColor`, null);
+	}
+	config = config;
+}
+
 function fixPositions() {
 	if (mapComponent?.fixProvincePositions) {
 		const fixed = mapComponent.fixProvincePositions();
@@ -130,6 +189,14 @@ function resetDefaults() {
 <div class="panel" class:hidden={!visible}>
 <h3 style="color: white; font-size: 20px;">⚙️ تنظیمات نقشه</h3>
 
+<div style="background: rgba(0,100,255,0.1); border: 1px solid rgba(0,150,255,0.3); border-radius: 8px; padding: 12px; margin-bottom: 15px; font-size: 11px; color: rgba(200,220,255,0.9);">
+	<div style="font-weight: bold; margin-bottom: 5px; color: #00ddff;">📌 راهنمای سریع:</div>
+	<div>• <strong>Bloom (گلو)</strong>: کنترل اصلی نورانی بودن</div>
+	<div>• <strong>نورپردازی</strong>: روشنایی کلی صحنه</div>
+	<div>• <strong>شفافیت</strong>: شفافیت سطوح داخلی</div>
+	<div>• <strong>نور داخلی</strong>: درخشش رنگ‌ها</div>
+</div>
+
 <h3>🏛️ استان‌ها - شکل 3D</h3>
 <div class="control-group">
 	<label><span class="value">{config.provinces.extrudeDepth}</span><span class="range">(10-50)</span>ارتفاع دیواره استان‌ها</label>
@@ -145,6 +212,7 @@ function resetDefaults() {
 </div>
 
 <h3>💎 استان‌ها - شیشه‌ای (عادی)</h3>
+<div style="font-size: 11px; color: rgba(0,255,255,0.6); margin-bottom: 10px;">✅ تغییرات فوری اعمال می‌شود</div>
 <div class="control-group">
 	<label><span class="value">{config.provinces.defaultOpacity.toFixed(2)}</span><span class="range">(0-1)</span>شفافیت</label>
 	<input type="range" min="0" max="1" step="0.05" value={config.provinces.defaultOpacity} on:input={handleInput('provinces.defaultOpacity')} />
@@ -175,17 +243,38 @@ function resetDefaults() {
 </div>
 
 <h3>📐 استان‌ها - خطوط حاشیه</h3>
+<div style="font-size: 11px; color: rgba(0,255,255,0.6); margin-bottom: 10px;">✅ تغییرات فوری اعمال می‌شود</div>
 <div class="control-group">
 	<label><span class="value">{config.provinces.borderOpacity.toFixed(2)}</span><span class="range">(0-1)</span>شفافیت خطوط</label>
 	<input type="range" min="0" max="1" step="0.05" value={config.provinces.borderOpacity} on:input={handleInput('provinces.borderOpacity')} />
 </div>
 <div class="control-group">
-	<label><span class="value">{config.provinces.borderWidth.toFixed(1)}</span><span class="range">(1-5)</span>ضخامت خطوط</label>
-	<input type="range" min="1" max="5" step="0.5" value={config.provinces.borderWidth} on:input={handleInput('provinces.borderWidth')} />
+	<label><span class="value">{config.provinces.borderWidth.toFixed(1)}</span><span class="range">(1-10)</span>ضخامت خطوط</label>
+	<input type="range" min="1" max="10" step="0.5" value={config.provinces.borderWidth} on:input={handleInput('provinces.borderWidth')} />
 </div>
 <div class="control-group">
-	<label><span class="value">{config.provinces.edgeAngle}</span><span class="range">(15-45)</span>زاویه تشخیص لبه</label>
-	<input type="range" min="15" max="45" step="1" value={config.provinces.edgeAngle} on:input={handleInput('provinces.edgeAngle')} />
+	<label><span class="value">{config.provinces.edgeAngle}</span><span class="range">(10-45)</span>زاویه لبه (کمتر = خطوط بیشتر)</label>
+	<input type="range" min="10" max="45" step="1" value={config.provinces.edgeAngle} on:input={handleInput('provinces.edgeAngle')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.borderGlowIntensity?.toFixed(2) || '1.00'}</span><span class="range">(0-2)</span>شدت گلو خطوط</label>
+	<input type="range" min="0" max="2" step="0.1" value={config.provinces.borderGlowIntensity || 1.0} on:input={handleInput('provinces.borderGlowIntensity')} />
+</div>
+<div class="color-group">
+	<input type="color" value={config.provinces.borderColor ? '#' + config.provinces.borderColor.toString(16).padStart(6, '0') : '#ffffff'} on:change={handleColorInput((v) => updateBorderColor('provinces', v))} />
+	<label>رنگ خطوط سفارشی</label>
+	{#if config.provinces.borderColor}
+		<button class="clear-color-btn" on:click={() => clearBorderColor('provinces')}>✖</button>
+	{/if}
+</div>
+<div style="font-size: 10px; color: rgba(150,150,150,0.7); margin-top: -8px; margin-bottom: 10px;">
+	💡 اگر رنگ سفارشی نباشد، از رنگ استان استفاده می‌شود
+</div>
+<div class="control-group">
+	<label style="display: flex; align-items: center; gap: 8px;">
+		<input type="checkbox" checked={config.provinces.borderOnTopOnly} on:change={(e) => handleCheckbox('provinces.borderOnTopOnly', e.target.checked)} />
+		<span>فقط خطوط روی سطح بالا</span>
+	</label>
 </div>
 
 <h3>✨ استان‌ها - هاور</h3>
@@ -249,9 +338,40 @@ function resetDefaults() {
 	<label><span class="value">{config.water.clearcoat.toFixed(2)}</span><span class="range">(0-1)</span>لایه شیشه‌ای</label>
 	<input type="range" min="0" max="1" step="0.05" value={config.water.clearcoat} on:input={handleInput('water.clearcoat')} />
 </div>
+
+<h3>🌊 دریاها - خطوط حاشیه</h3>
+<div style="font-size: 11px; color: rgba(0,200,255,0.6); margin-bottom: 10px;">💡 برای کاهش خطوط، زاویه لبه را بالاتر ببرید</div>
 <div class="control-group">
 	<label><span class="value">{config.water.borderOpacity.toFixed(2)}</span><span class="range">(0-1)</span>شفافیت خطوط</label>
 	<input type="range" min="0" max="1" step="0.05" value={config.water.borderOpacity} on:input={handleInput('water.borderOpacity')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.water.borderWidth?.toFixed(1) || '3.0'}</span><span class="range">(1-10)</span>ضخامت خطوط</label>
+	<input type="range" min="1" max="10" step="0.5" value={config.water.borderWidth || 3} on:input={handleInput('water.borderWidth')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.water.edgeAngle}</span><span class="range">(10-60)</span>زاویه لبه (بالاتر = خطوط کمتر)</label>
+	<input type="range" min="10" max="60" step="1" value={config.water.edgeAngle} on:input={handleInput('water.edgeAngle')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.water.borderGlowIntensity?.toFixed(2) || '1.00'}</span><span class="range">(0-2)</span>شدت گلو خطوط</label>
+	<input type="range" min="0" max="2" step="0.1" value={config.water.borderGlowIntensity || 1.0} on:input={handleInput('water.borderGlowIntensity')} />
+</div>
+<div class="color-group">
+	<input type="color" value={config.water.borderColor ? '#' + config.water.borderColor.toString(16).padStart(6, '0') : '#00bbdd'} on:change={handleColorInput((v) => updateBorderColor('water', v))} />
+	<label>رنگ خطوط سفارشی</label>
+	{#if config.water.borderColor}
+		<button class="clear-color-btn" on:click={() => clearBorderColor('water')}>✖</button>
+	{/if}
+</div>
+<div style="font-size: 10px; color: rgba(150,150,150,0.7); margin-top: -8px; margin-bottom: 10px;">
+	💡 اگر رنگ سفارشی نباشد، از رنگ دریا استفاده می‌شود
+</div>
+<div class="control-group">
+	<label style="display: flex; align-items: center; gap: 8px;">
+		<input type="checkbox" checked={config.water.borderOnTopOnly} on:change={(e) => handleCheckbox('water.borderOnTopOnly', e.target.checked)} />
+		<span>فقط خطوط روی سطح بالا</span>
+	</label>
 </div>
 
 <h3>🌊 رنگ دریاها</h3>
@@ -274,6 +394,7 @@ function resetDefaults() {
 </div>
 
 <h3>💫 افکت Bloom (گلو)</h3>
+<div style="font-size: 11px; color: rgba(255,255,0,0.6); margin-bottom: 10px;">⚡ تنظیم کلیدی برای نورانی بودن نقشه</div>
 <div class="control-group">
 	<label><span class="value">{config.bloom.strength.toFixed(1)}</span><span class="range">(0-3)</span>قدرت گلو</label>
 	<input type="range" min="0" max="3" step="0.1" value={config.bloom.strength} on:input={handleInput('bloom.strength')} />
@@ -306,6 +427,7 @@ function resetDefaults() {
 </div>
 
 <h3>💡 نورپردازی</h3>
+<div style="font-size: 11px; color: rgba(255,200,0,0.6); margin-bottom: 10px;">💡 کنترل روشنایی کلی نقشه</div>
 <div class="control-group">
 	<label><span class="value">{config.lighting.ambientIntensity.toFixed(2)}</span><span class="range">(0-1)</span>نور محیطی</label>
 	<input type="range" min="0" max="1" step="0.05" value={config.lighting.ambientIntensity} on:input={handleInput('lighting.ambientIntensity')} />
@@ -347,6 +469,18 @@ function resetDefaults() {
 <div class="color-group">
 	<input type="color" value="#{region.color.toString(16).padStart(6, '0')}" on:change={handleColorInput((v) => updateColor(key, v))} />
 	<label>{region.name}</label>
+</div>
+{/each}
+
+<h3>🎨 رنگ استان‌های جداگانه</h3>
+<div style="font-size: 11px; color: rgba(255,200,0,0.6); margin-bottom: 10px;">
+	💡 رنگ هر استان را جداگانه تنظیم کنید<br/>
+	اگر تنظیم نکنید، از رنگ منطقه استفاده می‌شود
+</div>
+{#each Object.entries(provinceNames).sort((a, b) => a[1].localeCompare(b[1], 'fa')) as [key, name]}
+<div class="color-group">
+	<input type="color" value="#{(provinceColors[key] || 0xffffff).toString(16).padStart(6, '0')}" on:change={handleColorInput((v) => updateProvinceColor(key, v))} />
+	<label>{name}</label>
 </div>
 {/each}
 
@@ -445,6 +579,7 @@ input[type="range"]::-moz-range-thumb {
 .color-group {
 	display: flex; gap: 10px;
 	align-items: center; margin-bottom: 10px;
+	position: relative;
 }
 .color-group input[type="color"] {
 	width: 50px; height: 30px;
@@ -456,6 +591,21 @@ input[type="range"]::-moz-range-thumb {
 	flex: 1; margin: 0; text-align: right;
 	color: rgba(255, 255, 255, 0.9);
 	font-size: 12px;
+}
+.clear-color-btn {
+	background: rgba(255, 50, 50, 0.3);
+	border: 1px solid rgba(255, 100, 100, 0.5);
+	color: #ff6666;
+	padding: 4px 8px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 12px;
+	font-weight: bold;
+	transition: all 0.2s;
+}
+.clear-color-btn:hover {
+	background: rgba(255, 50, 50, 0.5);
+	box-shadow: 0 0 10px rgba(255, 100, 100, 0.4);
 }
 
 .action-btn {

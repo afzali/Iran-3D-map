@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, createEventDispatcher } from 'svelte';
 	import * as THREE from 'three';
 	import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 	import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 	import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 	import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 	import { MAP_CONFIG, BACKGROUND_COLORS, provinceColors, provinceNames, regionGroups } from '$lib/config';
+	
+	const dispatch = createEventDispatcher();
 	
 	let container;
 	let scene, camera, renderer, controls, composer, bloomPass;
@@ -142,6 +144,29 @@
 			
 			console.log(`✅ رنگ منطقه ${regionKey} تغییر کرد`);
 		}
+	}
+	
+	// Update individual province color in real-time
+	export function updateProvinceColor(provinceKey: string, hexColor: string) {
+		const color = parseInt(hexColor.replace('#', ''), 16);
+		
+		// Update provinceColors
+		provinceColors[provinceKey] = color;
+		
+		// Update existing province
+		provinces.forEach(p => {
+			if (p.id === provinceKey) {
+				p.color = color;
+				p.mesh.material.emissive.setHex(color);
+				p.mesh.material.color.setHex(color);
+				if (p.wireframe) {
+					p.wireframe.material.color.setHex(color);
+				}
+				p.mesh.material.needsUpdate = true;
+				
+				console.log(`✅ رنگ استان ${provinceKey} تغییر کرد`);
+			}
+		});
 	}
 	
 	// Update water colors in real-time
@@ -296,6 +321,9 @@
 					p.wireframe.material.opacity = value;
 				} else if (path === 'provinces.borderWidth' && p.wireframe) {
 					p.wireframe.material.linewidth = value;
+				} else if (path === 'provinces.borderOnTopOnly' && p.wireframe) {
+					p.wireframe.material.depthTest = !value;
+					p.wireframe.material.needsUpdate = true;
 				}
 				// Extrude depth (scale.z because mesh is rotated)
 				else if (path === 'provinces.extrudeDepth') {
@@ -321,6 +349,13 @@
 					w.mesh.children.forEach(child => {
 						if (child instanceof THREE.LineSegments) {
 							child.material.opacity = value;
+						}
+					});
+				} else if (path === 'water.borderOnTopOnly') {
+					w.mesh.children.forEach(child => {
+						if (child instanceof THREE.LineSegments) {
+							child.material.depthTest = !value;
+							child.material.needsUpdate = true;
 						}
 					});
 				} else if (path === 'water.extrudeDepth') {
@@ -451,6 +486,12 @@
 						province.wireframe.material.opacity = MAP_CONFIG.provinces.hoverBorderOpacity || 1;
 					}
 					province.mesh.material.needsUpdate = true;
+					
+					// Dispatch event to update province info
+					dispatch('provinceHover', {
+						name: province.name,
+						color: province.color
+					});
 				}
 			} else if (hoveredProvince) {
 				// Reset hover when mouse leaves
@@ -462,6 +503,9 @@
 				}
 				hoveredProvince.mesh.material.needsUpdate = true;
 				hoveredProvince = null;
+				
+				// Dispatch event to reset province info
+				dispatch('provinceHover', null);
 			}
 		}
 		
@@ -475,24 +519,27 @@
 	});
 	
 	function setupLights() {
-		ambientLight = new THREE.AmbientLight(0x1a1a2e, MAP_CONFIG.lighting.ambientIntensity);
+		// نور محیطی یکنواخت
+		ambientLight = new THREE.AmbientLight(0xffffff, MAP_CONFIG.lighting.ambientIntensity);
 		scene.add(ambientLight);
 		
+		// نور اصلی از بالا - برای روشن کردن سطوح
 		directionalLight = new THREE.DirectionalLight(0xffffff, MAP_CONFIG.lighting.directionalIntensity);
-		directionalLight.position.set(0, 600, 200);
+		directionalLight.position.set(0, 800, 0);
 		directionalLight.castShadow = true;
 		scene.add(directionalLight);
 		
-		rimLight1 = new THREE.PointLight(0xff0055, MAP_CONFIG.lighting.rimLight1Intensity, 1000);
-		rimLight1.position.set(-400, 100, 0);
+		// نورهای لبه - از فاصله دورتر و ارتفاع بیشتر برای یکنواختی
+		rimLight1 = new THREE.PointLight(0xff0055, MAP_CONFIG.lighting.rimLight1Intensity, 2000);
+		rimLight1.position.set(-800, 300, -400);
 		scene.add(rimLight1);
 		
-		rimLight2 = new THREE.PointLight(0x00ffff, MAP_CONFIG.lighting.rimLight2Intensity, 1000);
-		rimLight2.position.set(400, 100, 0);
+		rimLight2 = new THREE.PointLight(0x00ffff, MAP_CONFIG.lighting.rimLight2Intensity, 2000);
+		rimLight2.position.set(800, 300, -400);
 		scene.add(rimLight2);
 		
-		rimLight3 = new THREE.PointLight(0xffff00, MAP_CONFIG.lighting.rimLight3Intensity, 1000);
-		rimLight3.position.set(0, 100, 400);
+		rimLight3 = new THREE.PointLight(0xffff00, MAP_CONFIG.lighting.rimLight3Intensity, 2000);
+		rimLight3.position.set(0, 300, 600);
 		scene.add(rimLight3);
 	}
 	
@@ -621,11 +668,16 @@
 		mesh.castShadow = true;
 		
 		const edges = new THREE.EdgesGeometry(geometry, MAP_CONFIG.water.edgeAngle);
+		
+		// استفاده از رنگ سفارشی یا رنگ دریا
+		const borderColor = MAP_CONFIG.water.borderColor || emissiveColor;
+		
 		const lineMaterial = new THREE.LineBasicMaterial({
-			color: emissiveColor,
+			color: borderColor,
 			transparent: true,
 			opacity: MAP_CONFIG.water.borderOpacity,
-			linewidth: MAP_CONFIG.water.borderWidth
+			linewidth: MAP_CONFIG.water.borderWidth || 3,
+			depthTest: !MAP_CONFIG.water.borderOnTopOnly  // اگر فقط بالا باشه، depthTest رو خاموش کن
 		});
 		const wireframe = new THREE.LineSegments(edges, lineMaterial);
 		mesh.add(wireframe);
@@ -652,6 +704,27 @@
 		};
 		
 		const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+		
+		// اضافه کردن vertex colors برای گرادیان از پایین به بالا
+		const positions = geometry.attributes.position;
+		const colors = new Float32Array(positions.count * 3);
+		
+		const r = ((color >> 16) & 255) / 255;
+		const g = ((color >> 8) & 255) / 255;
+		const b = (color & 255) / 255;
+		
+		for (let i = 0; i < positions.count; i++) {
+			const y = positions.getY(i);
+			// گرادیان: پایین روشن (1.0)، بالا کم‌رنگ (0.3)
+			const brightness = 1.0 - (y / MAP_CONFIG.provinces.extrudeDepth) * 0.7;
+			
+			colors[i * 3] = r * brightness;
+			colors[i * 3 + 1] = g * brightness;
+			colors[i * 3 + 2] = b * brightness;
+		}
+		
+		geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+		
 		const material = new THREE.MeshPhysicalMaterial({
 			color: color,
 			emissive: color,
@@ -663,7 +736,8 @@
 			side: THREE.DoubleSide,
 			clearcoat: MAP_CONFIG.provinces.clearcoat,
 			clearcoatRoughness: MAP_CONFIG.provinces.clearcoatRoughness,
-			reflectivity: MAP_CONFIG.provinces.reflectivity
+			reflectivity: MAP_CONFIG.provinces.reflectivity,
+			vertexColors: true  // فعال کردن vertex colors
 		});
 		
 		const mesh = new THREE.Mesh(geometry, material);
@@ -672,12 +746,37 @@
 		mesh.castShadow = true;
 		mesh.receiveShadow = true;
 		
+		// Create edges with gradient effect for neon glow
 		const edges = new THREE.EdgesGeometry(geometry, MAP_CONFIG.provinces.edgeAngle);
+		
+		// Add vertex colors for gradient effect (brighter at bottom, dimmer at top)
+		const edgePositions = edges.attributes.position;
+		const edgeColors = new Float32Array(edgePositions.count * 3);
+		
+		// استفاده از رنگ سفارشی یا رنگ استان
+		const borderColor = MAP_CONFIG.provinces.borderColor || color;
+		const br = ((borderColor >> 16) & 255) / 255;
+		const bg = ((borderColor >> 8) & 255) / 255;
+		const bb = (borderColor & 255) / 255;
+		
+		for (let i = 0; i < edgePositions.count; i++) {
+			const y = edgePositions.getY(i);
+			// گرادیان خطوط: پایین روشن (1.0)، بالا کم‌رنگ (0.4)
+			const brightness = (MAP_CONFIG.provinces.borderGlowIntensity || 1.0) * (1.0 - (y / MAP_CONFIG.provinces.extrudeDepth) * 0.6);
+			
+			edgeColors[i * 3] = br * brightness;
+			edgeColors[i * 3 + 1] = bg * brightness;
+			edgeColors[i * 3 + 2] = bb * brightness;
+		}
+		
+		edges.setAttribute('color', new THREE.BufferAttribute(edgeColors, 3));
+		
 		const lineMaterial = new THREE.LineBasicMaterial({
-			color: color,
+			vertexColors: true,
 			transparent: true,
 			opacity: MAP_CONFIG.provinces.borderOpacity,
-			linewidth: MAP_CONFIG.provinces.borderWidth
+			linewidth: MAP_CONFIG.provinces.borderWidth,
+			depthTest: !MAP_CONFIG.provinces.borderOnTopOnly  // اگر فقط بالا باشه، depthTest رو خاموش کن
 		});
 		const wireframe = new THREE.LineSegments(edges, lineMaterial);
 		mesh.add(wireframe);

@@ -6,6 +6,7 @@
 	
 	let provinceName = 'نقشه سه‌بعدی ایران';
 	let provinceInfo = 'موس را روی استان‌ها حرکت دهید';
+	let provinceColor = '#00ffff';
 	let showPanel = SHOW_CONTROL_PANEL;
 	let mapComponent;
 	let isRotating = true;
@@ -71,6 +72,19 @@
 	function handleFixPositions() {
 		console.log('Fix positions');
 	}
+	
+	function handleProvinceHover(event) {
+		const data = event.detail;
+		if (data) {
+			provinceName = data.name;
+			provinceInfo = 'استان ' + data.name;
+			provinceColor = '#' + data.color.toString(16).padStart(6, '0');
+		} else {
+			provinceName = 'نقشه سه‌بعدی ایران';
+			provinceInfo = 'موس را روی استان‌ها حرکت دهید';
+			provinceColor = '#00ffff';
+		}
+	}
 </script>
 
 <svelte:head>
@@ -79,7 +93,7 @@
 </svelte:head>
 
 <div class="app">
-	<IranMap3D bind:this={mapComponent} />
+	<IranMap3D bind:this={mapComponent} on:provinceHover={handleProvinceHover} />
 	
 	<ControlPanel 
 		visible={showPanel}
@@ -87,7 +101,7 @@
 	/>
 	
 	<div class="info">
-		<div class="province-name">{provinceName}</div>
+		<div class="province-name" style="color: {provinceColor}">{provinceName}</div>
 		<div class="province-info">{provinceInfo}</div>
 	</div>
 	
