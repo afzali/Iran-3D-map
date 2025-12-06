@@ -1,0 +1,296 @@
+<html class="dark" dir="rtl" lang="fa"><head></head><body class="bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200 h-screen w-screen flex flex-col overflow-hidden">```html
+
+
+
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Humanitarian Aid Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6", // Blueish primary
+                        "background-light": "#f3f4f6",
+                        "background-dark": "#050505", // Deep black
+                        "surface-dark": "#121214", // Slightly lighter for cards
+                        "surface-light": "#ffffff",
+                        "chart-purple": "#8b5cf6",
+                        "chart-blue": "#60a5fa",
+                        "chart-cyan": "#22d3ee",
+                        "chart-yellow": "#fbbf24",
+                        "chart-red": "#ef4444",
+                    },
+                    fontFamily: {
+                        display: ["Vazirmatn", "sans-serif"],
+                        body: ["Vazirmatn", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                    },
+                },
+            },
+        };
+    </script>
+<style>::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121214; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46; 
+            border-radius: 3px;
+        }
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            overflow: hidden;}
+    </style>
+
+
+<header class="h-16 border-b border-gray-800 bg-surface-dark/95 dark:bg-surface-dark/95 flex items-center justify-between px-4 z-20 shrink-0">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full bg-gray-700 overflow-hidden border border-gray-600">
+<img alt="User Avatar" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7nMgg7lBJUr91M94TZvj9h2GkkFxMFUdOc5-Fucdj55r5U6giatL-4TK7CmxV9yXlpqqxDZdIg8dj7CGZWokjLTKRJINrbdOkBLJt0SELO9Y7-0aj8X7fHZbnO4SroAP_m1G9WlYum1QCpcd41Wh905ZzNXIX27CJXXYLvFK8vtfXK8fFa9gJCKy-MB5RYv9MiQHmNuH13idf-dFXJ-dqUFomuSzoUbz1VLP5NaKerWAOuJd5Y6RdLHFKqIJvejUaUU9KGNizvMHK"/>
+</div>
+<button class="text-gray-400 hover:text-white">
+<span class="material-icons-outlined text-xl">notifications</span>
+</button>
+<div class="flex items-center text-xs text-gray-400 gap-2 border-r border-gray-700 pr-4 mr-2">
+<span class="material-icons-outlined text-sm text-yellow-500">wb_sunny</span>
+<span>۱۱:۵۵ ق.ظ</span>
+<span class="text-gray-600">|</span>
+<span>۲۷۰</span>
+</div>
+<div class="flex items-center gap-1 bg-gray-800 px-3 py-1 rounded-full text-xs text-gray-300">
+<span class="material-icons-outlined text-sm">location_on</span>
+<span>تهران</span>
+<span class="material-icons-outlined text-sm">expand_more</span>
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-8 text-sm">
+<a class="text-gray-400 hover:text-white transition" href="#">درباره هومان</a>
+<a class="text-gray-400 hover:text-white transition" href="#">ناجی باشیم</a>
+<a class="text-gray-400 hover:text-white transition" href="#">نجات دهندگان</a>
+<a class="text-white font-bold border-b-2 border-primary pb-5 mt-5" href="#">نجات یافتگان</a> 
+</nav>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<h1 class="font-bold text-lg text-white">هومان - نبض انسانیت</h1>
+</div>
+<div class="w-8 h-8">
+<svg class="text-gray-200" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 12C2 12 5 8 12 8C19 8 22 12 22 12" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+<path d="M2 16C2 16 5 12 12 12C19 12 22 16 22 16" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+<button class="text-gray-400 hover:text-white mr-4">
+<span class="material-icons text-xl">grid_view</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 h-[calc(100vh-4rem)] relative">
+<aside class="w-16 bg-surface-dark border-l border-gray-800 flex flex-col items-center py-4 gap-6 shrink-0 z-10">
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-800/50 text-gray-300 hover:bg-gray-700 hover:text-white transition">
+<span class="material-icons-outlined text-xl">public</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:text-white transition">
+<span class="material-icons-outlined text-xl">chat_bubble_outline</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:text-white transition">
+<span class="material-icons-outlined text-xl">pie_chart</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:text-white transition">
+<span class="material-icons-outlined text-xl">verified_user</span>
+</button>
+<div class="mt-auto flex flex-col gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:text-white transition">
+<span class="material-icons-outlined text-xl">logout</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl text-gray-500 hover:text-white transition">
+<span class="material-icons-outlined text-xl">help_outline</span>
+</button>
+</div>
+</aside>
+<main class="flex-1 bg-black relative flex flex-col">
+<div class="absolute inset-0 bg-gradient-to-br from-gray-900 to-black opacity-50 z-0"></div>
+<div class="absolute bottom-40 left-[21rem] flex flex-col gap-2 z-10">
+<div class="bg-surface-dark border border-gray-700 rounded-lg p-1 flex flex-col">
+<button class="p-2 text-gray-400 hover:text-white border-b border-gray-700"><span class="material-icons text-sm">layers</span></button>
+</div>
+<div class="bg-surface-dark border border-gray-700 rounded-lg p-1 flex flex-col">
+<button class="p-2 text-gray-400 hover:text-white border-b border-gray-700"><span class="material-icons text-sm">crop_free</span></button>
+</div>
+<div class="bg-surface-dark border border-gray-700 rounded-lg p-1 flex flex-col">
+<button class="p-2 text-gray-400 hover:text-white border-b border-gray-700"><span class="material-icons text-sm">add</span></button>
+<button class="p-2 text-gray-400 hover:text-white"><span class="material-icons text-sm">remove</span></button>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-surface-dark to-transparent z-10 flex items-end pb-4 pl-[20rem] pr-4">
+<div class="w-full h-20 bg-surface-dark/40 backdrop-blur-sm border border-gray-800 rounded-lg flex flex-col px-4 py-2">
+<div class="flex items-end justify-between h-full gap-[2px] w-full px-2" id="timeline-bars">
+</div>
+<div class="flex justify-between text-[10px] text-gray-500 mt-1 px-2 w-full">
+<span>فروردین</span>
+<span>اردیبهشت</span>
+<span>خرداد</span>
+<span>تیر</span>
+<span>مرداد</span>
+<span>شهریور</span>
+<span>مهر</span>
+<span>آبان</span>
+<span>آذر</span>
+<span>دی</span>
+<span>بهمن</span>
+<span>اسفند</span>
+</div>
+</div>
+</div>
+</main>
+<aside class="w-80 bg-surface-dark/95 backdrop-blur border-r border-gray-800 flex flex-col gap-4 p-4 overflow-y-auto shrink-0 z-20 absolute left-0 top-0 bottom-0 h-full scrollbar-hide">
+<div class="mb-2">
+<h3 class="text-gray-400 text-xs mb-3 font-bold">افتخارات</h3>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-[#1e1e24] p-2 rounded-lg flex flex-col items-center text-center py-3 border border-gray-800">
+<span class="material-icons-outlined text-gray-400 text-sm mb-1">favorite_border</span>
+<div class="text-white font-bold text-lg leading-none">۵۴۱</div>
+<div class="text-[9px] text-gray-500 mt-1">نفر</div>
+<div class="text-[8px] text-gray-400 mt-1">جان‌های نجات‌یافته</div>
+</div>
+<div class="bg-[#1e1e24] p-2 rounded-lg flex flex-col items-center text-center py-3 border border-gray-800">
+<span class="material-icons-outlined text-gray-400 text-sm mb-1">monitor_heart</span>
+<div class="text-white font-bold text-lg leading-none">۱.۲</div>
+<div class="text-[9px] text-gray-500 mt-1">میلیون</div>
+<div class="text-[8px] text-gray-400 mt-1">ضربان برگشته</div>
+</div>
+<div class="bg-[#1e1e24] p-2 rounded-lg flex flex-col items-center text-center py-3 border border-gray-800">
+<span class="material-icons-outlined text-gray-400 text-sm mb-1">electric_bolt</span>
+<div class="text-white font-bold text-lg leading-none">۳.۴</div>
+<div class="text-[9px] text-gray-500 mt-1">هزار</div>
+<div class="text-[8px] text-gray-400 mt-1">تعداد شوک‌ها</div>
+</div>
+</div>
+</div>
+<div class="bg-[#1e1e24] rounded-lg p-3 border border-gray-800">
+<h3 class="text-gray-300 text-xs mb-4 text-center">افراد نجات یافته</h3>
+<div class="h-32 flex items-end justify-around px-2 relative">
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0">
+<div class="w-full h-px bg-gray-700/30"></div>
+<div class="w-full h-px bg-gray-700/30"></div>
+<div class="w-full h-px bg-gray-700/30"></div>
+<div class="w-full h-px bg-gray-700/30"></div>
+</div>
+<div class="w-4 flex flex-col gap-1 z-10 group">
+<div class="w-full bg-chart-purple h-8 rounded-t-sm opacity-80 group-hover:opacity-100 transition"></div>
+<div class="w-full bg-chart-blue h-6 rounded-b-sm opacity-80 group-hover:opacity-100 transition"></div>
+</div>
+<div class="w-4 flex flex-col gap-1 z-10 group">
+<div class="w-full bg-chart-purple h-10 rounded-t-sm opacity-80 group-hover:opacity-100 transition"></div>
+<div class="w-full bg-chart-blue h-4 rounded-b-sm opacity-80 group-hover:opacity-100 transition"></div>
+</div>
+<div class="w-4 flex flex-col gap-1 z-10 group">
+<div class="w-full bg-chart-purple h-12 rounded-t-sm opacity-80 group-hover:opacity-100 transition"></div>
+<div class="w-full bg-chart-blue h-5 rounded-b-sm opacity-80 group-hover:opacity-100 transition"></div>
+</div>
+<div class="w-4 flex flex-col gap-1 z-10 group">
+<div class="w-full bg-chart-purple h-16 rounded-t-sm opacity-80 group-hover:opacity-100 transition"></div>
+<div class="w-full bg-chart-blue h-8 rounded-b-sm opacity-80 group-hover:opacity-100 transition"></div>
+</div>
+<div class="w-4 flex flex-col gap-1 z-10 group">
+<div class="w-full bg-chart-purple h-8 rounded-t-sm opacity-80 group-hover:opacity-100 transition"></div>
+<div class="w-full bg-chart-blue h-10 rounded-b-sm opacity-80 group-hover:opacity-100 transition"></div>
+</div>
+</div>
+<div class="flex justify-between text-[9px] text-gray-500 mt-2 px-1">
+<span>کودک</span>
+<span>نوجوان</span>
+<span>جوان</span>
+<span>میان سال</span>
+<span>سالمند</span>
+</div>
+</div>
+<div class="bg-[#1e1e24] rounded-lg p-3 border border-gray-800">
+<h3 class="text-gray-300 text-xs mb-4 text-center">وضعیت عملکرد دستگاه‌ها (زمان عملکرد / نجات)</h3>
+<div class="h-32 flex items-end gap-1 px-1 relative">
+<div class="flex-1 bg-chart-purple h-[40%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[60%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-purple h-[50%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[70%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-purple h-[55%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[30%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-purple h-[45%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[65%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-purple h-[35%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[50%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-purple h-[60%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[40%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-purple h-[50%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[70%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-purple h-[30%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[50%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-purple h-[65%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[45%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-purple h-[55%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[35%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-purple h-[60%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[40%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-purple h-[50%] rounded-t-sm opacity-70"></div>
+<div class="flex-1 bg-chart-cyan h-[70%] rounded-t-sm opacity-70"></div>
+</div>
+</div>
+<div class="bg-[#1e1e24] rounded-lg p-3 border border-gray-800">
+<h3 class="text-gray-300 text-xs mb-4 text-center">خیرین استان‌ها</h3>
+<div class="h-32 relative flex items-center justify-between px-1">
+<div class="absolute w-full h-px bg-white/20 top-1/2 left-0 z-0"></div>
+<div class="w-2 bg-chart-blue h-10 mb-8 rounded-full z-10"></div>
+<div class="w-2 bg-chart-purple h-12 mt-4 rounded-full z-10"></div>
+<div class="w-2 bg-chart-blue h-8 mb-4 rounded-full z-10"></div>
+<div class="w-2 bg-chart-purple h-14 mt-6 rounded-full z-10"></div>
+<div class="w-2 bg-chart-blue h-6 mb-2 rounded-full z-10"></div>
+<div class="w-2 bg-chart-purple h-10 mt-2 rounded-full z-10"></div>
+<div class="w-2 bg-chart-blue h-12 mb-6 rounded-full z-10"></div>
+<div class="w-2 bg-chart-purple h-8 mt-1 rounded-full z-10"></div>
+<div class="w-2 bg-chart-blue h-16 mb-10 rounded-full z-10"></div>
+<div class="w-2 bg-chart-purple h-4 mt-2 rounded-full z-10"></div>
+<div class="w-2 bg-chart-blue h-10 mb-4 rounded-full z-10"></div>
+<div class="w-2 bg-chart-purple h-12 mt-6 rounded-full z-10"></div>
+</div>
+<div class="flex justify-between text-[8px] text-gray-500 mt-2 px-1 text-center">
+<span>تهران</span>
+<span>خراسان</span>
+<span>تبریز</span>
+<span>اردبیل</span>
+<span>کرمان</span>
+<span>مازندران</span>
+<span>سیستان</span>
+<span>سمنان</span>
+<span>اصفهان</span>
+</div>
+</div>
+</aside>
+</div>
+<script>
+        const timelineContainer = document.getElementById('timeline-bars');
+        // Clear initial static ones
+        timelineContainer.innerHTML = '';
+        // Generate random bars
+        const colors = ['bg-gray-700', 'bg-gray-600', 'bg-yellow-600', 'bg-red-600'];
+        for (let i = 0; i < 120; i++) {
+            const height = Math.floor(Math.random() * 8) + 2; // 2 to 10 height units (tailwind doesn't support arbitrary height classes easily without style, so we use style)
+            const isActive = Math.random() > 0.9;
+            const colorClass = isActive ? (Math.random() > 0.5 ? 'bg-yellow-600' : 'bg-red-600') : 'bg-gray-700';
+            const opacity = isActive ? '1' : '0.5';
+            const bar = document.createElement('div');
+            bar.className = `w-1 rounded-t ${colorClass} transition hover:bg-white hover:opacity-100`;
+            bar.style.height = `${height * 10}%`; // rough % height
+            bar.style.opacity = opacity;
+            timelineContainer.appendChild(bar);
+        }
+    </script>
+
+</body></html>

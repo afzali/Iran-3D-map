@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="dark" dir="rtl" lang="fa"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Management Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7c3aed", // Violet-600
+                        "background-light": "#f3f4f6", // Gray-100
+                        "surface-light": "#ffffff",
+                        "background-dark": "#050505", // Very dark, almost black
+                        "surface-dark": "#121214", // Dark grey for cards
+                        "surface-dark-lighter": "#1c1c1f", // Lighter grey for inner elements
+                        "accent-purple": "#8b5cf6",
+                        "accent-cyan": "#06b6d4",
+                        "accent-blue": "#3b82f6",
+                    },
+                    fontFamily: {
+                        display: ["Vazirmatn", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-gray-100 font-display min-h-screen overflow-hidden flex flex-col transition-colors duration-300">
+<header class="h-16 bg-surface-dark border-b border-gray-800 flex items-center justify-between px-4 z-20 shadow-sm relative">
+<div class="flex items-center gap-4 text-xs md:text-sm text-gray-400">
+<div class="relative w-8 h-8 rounded-full overflow-hidden border border-gray-600">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-WhittdJJgBXn13hgQO2uRA8RiNUu1CGnm5Mw99ibtoHc7TbmIzlkM3bou-CN8cdhplx1TMzuLpEw-ZXmUeHphqD2x9DkT05_tDpAIsitdl9sKUX46BrTI13uhr-F83MPsukuLQ7CLgdQqoeMfjMtdEYZKxj56gMawBeq1xB3-hubRuxWKBgtTugAdP3bDUxJ1lVooYXJlmi6I1YLWpw8AKfFp1Tlrb9TF4zMzckiCE2sKUiwnaBavXMf6k7K-s937R2h5VNQBADf"/>
+</div>
+<button class="material-symbols-rounded text-xl hover:text-primary transition-colors">notifications</button>
+<div class="hidden md:flex items-center gap-2">
+<span class="material-symbols-rounded text-yellow-500">dark_mode</span>
+<span>۱۱:۰۰ ق.ظ</span>
+<span class="text-gray-600">|</span>
+<span>۲۷°</span>
+</div>
+</div>
+<nav class="hidden lg:flex items-center gap-8 text-sm font-medium">
+<a class="text-gray-400 hover:text-primary transition-colors" href="#">داشبورد اصلی</a>
+<a class="text-white border-b-2 border-primary pb-0.5" href="#">مدیریت</a>
+</nav>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<h1 class="text-lg font-bold text-white leading-tight">پنل مدیریت</h1>
+</div>
+<div class="w-10 h-10 bg-gradient-to-tr from-primary to-accent-cyan rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-rounded text-2xl">admin_panel_settings</span>
+</div>
+<button class="lg:hidden material-symbols-rounded text-2xl">menu</button>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden relative">
+<aside class="w-14 bg-surface-dark border-l border-gray-800 flex-col items-center py-4 gap-6 z-10 hidden sm:flex">
+<button class="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-800 transition-colors"><span class="material-symbols-rounded">dashboard</span></button>
+<button class="p-2 rounded-lg bg-gray-800 text-primary"><span class="material-symbols-rounded">manage_accounts</span></button>
+<button class="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-800 transition-colors"><span class="material-symbols-rounded">assignment</span></button>
+<button class="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-800 transition-colors"><span class="material-symbols-rounded">settings</span></button>
+<div class="mt-auto flex flex-col gap-6">
+<button class="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-900/20 transition-colors"><span class="material-symbols-rounded">logout</span></button>
+<button class="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-800 transition-colors"><span class="material-symbols-rounded">help</span></button>
+</div>
+</aside>
+<main class="flex-1 bg-background-dark p-6 overflow-y-auto">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="lg:col-span-2 bg-surface-dark rounded-xl p-6 border border-gray-800">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-lg font-semibold text-white">مدیریت کاربران</h2>
+<div class="flex items-center gap-2">
+<div class="relative">
+<span class="material-symbols-rounded absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg">search</span>
+<input class="bg-surface-dark-lighter border border-gray-700 rounded-lg py-2 pr-10 pl-4 text-sm focus:ring-primary focus:border-primary w-48" placeholder="جستجوی کاربر..." type="text"/>
+</div>
+<button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-purple-500 transition-colors">
+<span class="material-symbols-rounded text-lg">add</span>
+                                کاربر جدید
+                            </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-sm text-right">
+<thead class="text-gray-400 border-b border-gray-700">
+<tr>
+<th class="py-3 px-4 font-medium">نام</th>
+<th class="py-3 px-4 font-medium">نقش</th>
+<th class="py-3 px-4 font-medium">وضعیت</th>
+<th class="py-3 px-4 font-medium">آخرین ورود</th>
+<th class="py-3 px-4 font-medium">عملیات</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gray-800">
+<tr>
+<td class="py-3 px-4 text-white">علی رضایی</td>
+<td class="py-3 px-4 text-gray-300">مدیر</td>
+<td class="py-3 px-4"><span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full">فعال</span></td>
+<td class="py-3 px-4 text-gray-300">۲ ساعت پیش</td>
+<td class="py-3 px-4"><button class="text-gray-400 hover:text-primary"><span class="material-symbols-rounded">more_vert</span></button></td>
+</tr>
+<tr>
+<td class="py-3 px-4 text-white">زهرا محمدی</td>
+<td class="py-3 px-4 text-gray-300">نجات‌دهنده</td>
+<td class="py-3 px-4"><span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full">فعال</span></td>
+<td class="py-3 px-4 text-gray-300">دیروز</td>
+<td class="py-3 px-4"><button class="text-gray-400 hover:text-primary"><span class="material-symbols-rounded">more_vert</span></button></td>
+</tr>
+<tr>
+<td class="py-3 px-4 text-white">حسن کریمی</td>
+<td class="py-3 px-4 text-gray-300">اپراتور</td>
+<td class="py-3 px-4"><span class="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded-full">در انتظار تایید</span></td>
+<td class="py-3 px-4 text-gray-300">۱ هفته پیش</td>
+<td class="py-3 px-4"><button class="text-gray-400 hover:text-primary"><span class="material-symbols-rounded">more_vert</span></button></td>
+</tr>
+<tr>
+<td class="py-3 px-4 text-white">مریم احمدی</td>
+<td class="py-3 px-4 text-gray-300">نجات‌دهنده</td>
+<td class="py-3 px-4"><span class="bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded-full">غیرفعال</span></td>
+<td class="py-3 px-4 text-gray-300">۱ ماه پیش</td>
+<td class="py-3 px-4"><button class="text-gray-400 hover:text-primary"><span class="material-symbols-rounded">more_vert</span></button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bg-surface-dark rounded-xl p-6 border border-gray-800">
+<h2 class="text-lg font-semibold text-white mb-4">تنظیمات سیستم</h2>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-300">فعال‌سازی حالت تعمیر</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-300">اعلان‌های ایمیلی</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm text-gray-300">گزارشات خودکار</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div>
+<label class="text-sm text-gray-300 block mb-2">سطح دسترسی پیش‌فرض</label>
+<select class="w-full bg-surface-dark-lighter border border-gray-700 rounded-lg py-2 px-3 text-sm focus:ring-primary focus:border-primary">
+<option>کاربر</option>
+<option selected="">نجات‌دهنده</option>
+<option>اپراتور</option>
+</select>
+</div>
+<button class="w-full bg-primary/20 text-primary py-2.5 rounded-lg text-sm font-medium hover:bg-primary/30 transition-colors">ذخیره تغییرات</button>
+</div>
+</div>
+<div class="lg:col-span-3 bg-surface-dark rounded-xl p-6 border border-gray-800">
+<h2 class="text-lg font-semibold text-white mb-4">نظارت بر ماموریت‌ها</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+<div class="bg-surface-dark-lighter p-4 rounded-lg">
+<p class="text-3xl font-bold text-accent-cyan">۲۸</p>
+<p class="text-sm text-gray-400 mt-1">ماموریت‌های فعال</p>
+</div>
+<div class="bg-surface-dark-lighter p-4 rounded-lg">
+<p class="text-3xl font-bold text-green-400">۱۵۲</p>
+<p class="text-sm text-gray-400 mt-1">تکمیل شده امروز</p>
+</div>
+<div class="bg-surface-dark-lighter p-4 rounded-lg">
+<p class="text-3xl font-bold text-yellow-400">۱۲</p>
+<p class="text-sm text-gray-400 mt-1">در انتظار تخصیص</p>
+</div>
+<div class="bg-surface-dark-lighter p-4 rounded-lg">
+<p class="text-3xl font-bold text-red-400">۳</p>
+<p class="text-sm text-gray-400 mt-1">هشدار سیستمی</p>
+</div>
+</div>
+<div class="mt-6">
+<h3 class="text-base font-medium text-gray-200 mb-3">آخرین فعالیت‌ها</h3>
+<ul class="space-y-3">
+<li class="flex items-center justify-between p-3 bg-surface-dark-lighter rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-rounded text-green-400">check_circle</span>
+<p class="text-sm text-gray-300">ماموریت #3412 با موفقیت به پایان رسید.</p>
+</div>
+<span class="text-xs text-gray-500">۵ دقیقه پیش</span>
+</li>
+<li class="flex items-center justify-between p-3 bg-surface-dark-lighter rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-rounded text-blue-400">person_add</span>
+<p class="text-sm text-gray-300">کاربر جدید "سارا نادری" ثبت‌نام کرد.</p>
+</div>
+<span class="text-xs text-gray-500">۱۵ دقیقه پیش</span>
+</li>
+<li class="flex items-center justify-between p-3 bg-surface-dark-lighter rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-rounded text-yellow-400">pending</span>
+<p class="text-sm text-gray-300">ماموریت #3413 در انتظار تخصیص ناجی است.</p>
+</div>
+<span class="text-xs text-gray-500">۲۲ دقیقه پیش</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Check local storage or system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+        // Toggle function (optional, can be attached to a button)
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+        // Wire up the light_mode icon to toggle
+        document.querySelector('.material-symbols-rounded.text-yellow-500').parentElement.addEventListener('click', toggleTheme);
+    </script>
+
+</body></html>

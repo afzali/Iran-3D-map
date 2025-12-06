@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html class="dark" dir="rtl" lang="fa"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Humanitarian Aid Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7c3aed", // Violet-600
+                        "background-light": "#f3f4f6", // Gray-100
+                        "surface-light": "#ffffff",
+                        "background-dark": "#050505", // Very dark, almost black
+                        "surface-dark": "#121214", // Dark grey for cards
+                        "surface-dark-lighter": "#1c1c1f", // Lighter grey for inner elements
+                        "accent-purple": "#8b5cf6",
+                        "accent-cyan": "#06b6d4",
+                        "accent-blue": "#3b82f6",
+                    },
+                    fontFamily: {
+                        display: ["Vazirmatn", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                    },
+                },
+            },
+        };
+    </script>
+<style>::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46; 
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b; 
+        }
+        .chart-bar {
+            transition: height 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-gray-100 font-display min-h-screen overflow-hidden flex flex-col transition-colors duration-300">
+<header class="h-16 bg-surface-dark border-b border-gray-800 flex items-center justify-between px-4 z-20 shadow-sm relative">
+<div class="flex items-center gap-4 text-xs md:text-sm text-gray-400">
+<div class="relative w-8 h-8 rounded-full overflow-hidden border border-gray-600">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-WhittdJJgBXn13hgQO2uRA8RiNUu1CGnm5Mw99ibtoHc7TbmIzlkM3bou-CN8cdhplx1TMzuLpEw-ZXmUeHphqD2x9DkT05_tDpAIsitdl9sKUX46BrTI13uhr-F83MPsukuLQ7CLgdQqoeMfjMtdEYZKxj56gMawBeq1xB3-hubRuxWKBgtTugAdP3bDUxJ1lVooYXJlmi6I1YLWpw8AKfFp1Tlrb9TF4zMzckiCE2sKUiwnaBavXMf6k7K-s937R2h5VNQBADf"/>
+</div>
+<button class="material-symbols-rounded text-xl hover:text-primary transition-colors">notifications</button>
+<div class="hidden md:flex items-center gap-2">
+<span class="material-symbols-rounded text-yellow-500">dark_mode</span>
+<span>۱۱:۰۰ ق.ظ</span>
+<span class="text-gray-600">|</span>
+<span>۲۷°</span>
+</div>
+<div class="hidden md:flex items-center gap-1 bg-surface-dark-lighter px-2 py-1 rounded-full border border-gray-700">
+<span class="material-symbols-rounded text-base">location_on</span>
+<span>تهران</span>
+</div>
+</div>
+<nav class="hidden lg:flex items-center gap-8 text-sm font-medium">
+<a class="text-gray-400 hover:text-primary transition-colors" href="#">درباره هومان</a>
+<a class="text-gray-400 hover:text-primary transition-colors" href="#">ناجی باشیم</a>
+<a class="text-gray-400 hover:text-primary transition-colors" href="#">نجات دهندگان</a>
+<a class="text-white border-b-2 border-primary pb-0.5" href="#">نجات یافتگان</a>
+</nav>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<h1 class="text-lg font-bold text-white leading-tight">هومان - نبض انسانیت</h1>
+</div>
+<div class="w-10 h-10 bg-gradient-to-tr from-primary to-accent-cyan rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-rounded text-2xl">waves</span>
+</div>
+<button class="lg:hidden material-symbols-rounded text-2xl">menu</button>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden relative">
+<aside class="w-14 bg-surface-dark border-l border-gray-800 flex flex-col items-center py-4 gap-6 z-10 hidden sm:flex">
+<button class="p-2 rounded-lg bg-gray-800 text-primary"><span class="material-symbols-rounded">dashboard</span></button>
+<button class="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-800 transition-colors"><span class="material-symbols-rounded">forum</span></button>
+<button class="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-800 transition-colors"><span class="material-symbols-rounded">pie_chart</span></button>
+<button class="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-800 transition-colors"><span class="material-symbols-rounded">verified_user</span></button>
+<div class="mt-auto flex flex-col gap-6">
+<button class="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-900/20 transition-colors"><span class="material-symbols-rounded">logout</span></button>
+<button class="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-800 transition-colors"><span class="material-symbols-rounded">help</span></button>
+</div>
+</aside>
+<main class="flex-1 relative bg-black overflow-hidden flex flex-col justify-end">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-gradient-to-b from-gray-900 via-black to-black opacity-90"></div>
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#4f4f4f 1px, transparent 1px); background-size: 20px 20px;"></div>
+<div class="absolute left-6 bottom-48 flex flex-col gap-2 z-10">
+<button class="w-10 h-10 rounded-lg bg-surface-dark border border-gray-700 flex items-center justify-center hover:bg-gray-800 text-white"><span class="material-symbols-rounded">layers</span></button>
+<button class="w-10 h-10 rounded-lg bg-surface-dark border border-gray-700 flex items-center justify-center hover:bg-gray-800 text-white"><span class="material-symbols-rounded">crop_free</span></button>
+<button class="w-10 h-10 rounded-lg bg-surface-dark border border-gray-700 flex items-center justify-center hover:bg-gray-800 text-white"><span class="material-symbols-rounded">add</span></button>
+<button class="w-10 h-10 rounded-lg bg-surface-dark border border-gray-700 flex items-center justify-center hover:bg-gray-800 text-white"><span class="material-symbols-rounded">remove</span></button>
+</div>
+</div>
+<div class="relative z-10 w-full h-32 bg-surface-dark/90 backdrop-blur-md border-t border-gray-800 p-4 flex flex-col">
+<div class="flex-1 flex items-end justify-between gap-1 px-4 relative">
+<div class="absolute inset-0 flex items-end justify-between px-2 pb-6 opacity-80">
+<div class="w-1 h-4 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-8 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-3 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-12 bg-orange-400 rounded-t shadow-[0_0_10px_rgba(251,146,60,0.5)]"></div>
+<div class="w-1 h-5 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-2 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-6 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-10 bg-yellow-400 rounded-t"></div>
+<div class="w-1 h-4 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-16 bg-red-500 rounded-t shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
+<div class="w-1 h-3 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-5 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-8 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-4 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-2 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-14 bg-orange-500 rounded-t"></div>
+<div class="w-1 h-6 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-3 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-9 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-5 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-7 bg-red-400 rounded-t"></div>
+<div class="w-1 h-4 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-2 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-12 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-4 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-6 bg-yellow-500 rounded-t"></div>
+<div class="w-1 h-3 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-8 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-5 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-10 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-4 bg-red-500 rounded-t"></div>
+<div class="w-1 h-2 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-6 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-3 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-9 bg-orange-400 rounded-t"></div>
+<div class="w-1 h-5 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-11 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-4 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-7 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-2 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-5 bg-red-400 rounded-t"></div>
+<div class="w-1 h-14 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-3 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-6 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-4 bg-orange-500 rounded-t"></div>
+<div class="w-1 h-8 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-2 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-10 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-5 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-3 bg-red-500 rounded-t"></div>
+<div class="w-1 h-7 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-4 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-2 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-6 bg-yellow-400 rounded-t"></div>
+<div class="w-1 h-3 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-9 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-5 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-12 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-4 bg-orange-400 rounded-t"></div>
+<div class="w-1 h-2 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-7 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-3 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-5 bg-red-500 rounded-t"></div>
+<div class="w-1 h-8 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-4 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-2 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-10 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-6 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-3 bg-orange-500 rounded-t"></div>
+<div class="w-1 h-4 bg-gray-600 rounded-t"></div>
+<div class="w-1 h-1 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-2 bg-gray-500 rounded-t"></div>
+<div class="w-1 h-5 bg-gray-500 rounded-t"></div>
+</div>
+</div>
+<div class="flex justify-between text-xs text-gray-400 mt-2 px-2 font-light">
+<span>فروردین</span>
+<span>اردیبهشت</span>
+<span>خرداد</span>
+<span>تیر</span>
+<span>مرداد</span>
+<span>شهریور</span>
+<span>مهر</span>
+<span>آبان</span>
+<span>آذر</span>
+<span>دی</span>
+<span>بهمن</span>
+<span>اسفند</span>
+</div>
+</div>
+</main>
+<aside class="w-full md:w-80 lg:w-96 bg-surface-dark border-r border-gray-800 flex flex-col overflow-y-auto z-20 shadow-xl">
+<div class="p-6 space-y-6">
+<h2 class="text-sm font-semibold text-gray-400 mb-2">افتخارات</h2>
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-surface-dark-lighter p-3 rounded-xl flex flex-col items-center text-center shadow-sm">
+<div class="text-gray-400 mb-1 w-full text-left"><span class="material-symbols-rounded text-sm">favorite</span></div>
+<div class="text-xl font-bold text-white">۵۴۱ <span class="text-xs font-normal text-gray-500">نفر</span></div>
+<div class="text-[10px] text-gray-400 mt-1">جان‌های نجات‌یافته</div>
+</div>
+<div class="bg-surface-dark-lighter p-3 rounded-xl flex flex-col items-center text-center shadow-sm">
+<div class="text-gray-400 mb-1 w-full text-left"><span class="material-symbols-rounded text-sm">ecg_heart</span></div>
+<div class="text-xl font-bold text-white">۱.۲ <span class="text-xs font-normal text-gray-500">میلیون</span></div>
+<div class="text-[10px] text-gray-400 mt-1">ضربان برگشته</div>
+</div>
+<div class="bg-surface-dark-lighter p-3 rounded-xl flex flex-col items-center text-center shadow-sm">
+<div class="text-gray-400 mb-1 w-full text-left"><span class="material-symbols-rounded text-sm">bolt</span></div>
+<div class="text-xl font-bold text-white">۳.۴ <span class="text-xs font-normal text-gray-500">هزار</span></div>
+<div class="text-[10px] text-gray-400 mt-1">تعداد شوک‌ها</div>
+</div>
+</div>
+<div class="bg-surface-dark-lighter rounded-xl p-4 shadow-sm border border-gray-700/50">
+<h3 class="text-sm font-medium text-gray-200 mb-4 text-right">افراد نجات یافته</h3>
+<div class="h-40 flex items-end justify-between gap-2 px-2">
+<div class="flex flex-col items-center gap-2 w-1/5 group">
+<div class="w-full flex flex-col gap-1 items-center h-full justify-end">
+<div class="w-full h-[30%] bg-accent-purple rounded-t-sm rounded-b-sm opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full h-[25%] bg-accent-blue rounded-t-sm rounded-b-sm opacity-80 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-[10px] text-gray-500">کودک</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-1/5 group">
+<div class="w-full flex flex-col gap-1 items-center h-full justify-end">
+<div class="w-full h-[40%] bg-accent-purple rounded-t-sm rounded-b-sm opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full h-[20%] bg-accent-blue rounded-t-sm rounded-b-sm opacity-80 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-[10px] text-gray-500">نوجوان</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-1/5 group">
+<div class="w-full flex flex-col gap-1 items-center h-full justify-end">
+<div class="w-full h-[55%] bg-accent-purple rounded-t-sm rounded-b-sm opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full h-[35%] bg-accent-blue rounded-t-sm rounded-b-sm opacity-80 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-[10px] text-gray-500">جوان</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-1/5 group">
+<div class="w-full flex flex-col gap-1 items-center h-full justify-end">
+<div class="w-full h-[80%] bg-accent-purple rounded-t-sm rounded-b-sm opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full h-[40%] bg-accent-blue rounded-t-sm rounded-b-sm opacity-80 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-[10px] text-gray-500">میانسال</span>
+</div>
+<div class="flex flex-col items-center gap-2 w-1/5 group">
+<div class="w-full flex flex-col gap-1 items-center h-full justify-end">
+<div class="w-full h-[45%] bg-accent-purple rounded-t-sm rounded-b-sm opacity-80 group-hover:opacity-100 transition-opacity"></div>
+<div class="w-full h-[30%] bg-accent-blue rounded-t-sm rounded-b-sm opacity-80 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-[10px] text-gray-500">سالمند</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark-lighter rounded-xl p-4 shadow-sm border border-gray-700/50">
+<h3 class="text-sm font-medium text-gray-200 mb-4 text-right">وضعیت عملکرد دستگاه‌ها</h3>
+<div class="h-32 flex items-end justify-between gap-1">
+<div class="w-1.5 h-[30%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[40%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[50%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[45%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[60%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[70%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[55%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[40%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[30%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[20%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[35%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[50%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[65%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[75%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[60%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[50%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[40%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[30%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[45%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[55%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[70%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[60%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[50%] bg-accent-purple rounded-full"></div>
+<div class="w-1.5 h-[40%] bg-accent-cyan rounded-full"></div>
+<div class="w-1.5 h-[30%] bg-accent-purple rounded-full"></div>
+</div>
+</div>
+<div class="bg-surface-dark-lighter rounded-xl p-4 shadow-sm border border-gray-700/50">
+<h3 class="text-sm font-medium text-gray-200 mb-4 text-right">خیرین استان‌ها</h3>
+<div class="h-32 flex items-center justify-between gap-1 relative">
+<div class="absolute w-full h-[1px] bg-gray-600 top-1/2"></div>
+<div class="w-2 h-[40%] bg-accent-blue rounded-full mb-[50%]"></div>
+<div class="w-2 h-[30%] bg-accent-purple rounded-full mt-[50%]"></div>
+<div class="w-2 h-[60%] bg-accent-blue rounded-full mb-[50%]"></div>
+<div class="w-2 h-[20%] bg-accent-purple rounded-full mt-[50%]"></div>
+<div class="w-2 h-[40%] bg-accent-blue rounded-full mb-[50%]"></div>
+<div class="w-2 h-[50%] bg-accent-purple rounded-full mt-[50%]"></div>
+<div class="w-2 h-[30%] bg-accent-blue rounded-full mb-[50%]"></div>
+<div class="w-2 h-[70%] bg-accent-purple rounded-full mt-[50%]"></div>
+<div class="w-2 h-[45%] bg-accent-blue rounded-full mb-[50%]"></div>
+<div class="w-2 h-[35%] bg-accent-purple rounded-full mt-[50%]"></div>
+<div class="w-2 h-[55%] bg-accent-blue rounded-full mb-[50%]"></div>
+<div class="w-2 h-[25%] bg-accent-purple rounded-full mt-[50%]"></div>
+<div class="w-2 h-[40%] bg-accent-blue rounded-full mb-[50%]"></div>
+<div class="w-2 h-[30%] bg-accent-purple rounded-full mt-[50%]"></div>
+</div>
+<div class="flex justify-between text-[8px] text-gray-400 mt-2 px-1">
+<span>اصفهان</span>
+<span>سمنان</span>
+<span>سیستان</span>
+<span>مازندران</span>
+<span>اردبیل</span>
+<span>کرمان</span>
+<span>تبریز</span>
+<span>خراسان</span>
+<span>تهران</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<script>
+        // Check local storage or system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+        // Toggle function (optional, can be attached to a button)
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+        // Wire up the light_mode icon to toggle
+        document.querySelector('.material-symbols-rounded.text-yellow-500').parentElement.addEventListener('click', toggleTheme);
+    </script>
+</body></html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد هوشمند - پیش اسکایت</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #fff;
+        }
+        .card {
+            background: rgba(20, 25, 45, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, rgba(30, 35, 55, 0.9) 0%, rgba(20, 25, 45, 0.9) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .chart-bar {
+            transition: all 0.3s ease;
+        }
+        .chart-bar:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-8">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold">هوشمند - پیش اسکایت</h1>
+                <p class="text-sm text-gray-400">۱۴۰۳/۰۹/۱۶ - ۱۵:۳۷</p>
+            </div>
+        </div>
+        <nav class="flex gap-6 text-sm">
+            <a href="#" class="text-white hover:text-purple-400 transition">بخش پزشکان</a>
+            <a href="#" class="text-gray-400 hover:text-white transition">بخش پذیرش</a>
+            <a href="#" class="text-gray-400 hover:text-white transition">بخش تاکسی</a>
+            <a href="#" class="text-gray-400 hover:text-white transition">داروخانه هوشمند</a>
+            <a href="#" class="text-gray-400 hover:text-white transition">نوبت دهی</a>
+        </nav>
+        <div class="flex items-center gap-4
+
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold">پیش اسکایت - بیش اسکایت</h1>
+                <p class="text-sm text-gray-400">۱۴۰۳/۰۹/۱۶ ساعت ۱۴:۳۰</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm transition">تنظیمات</button>
+            <button class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm transition">خروج</button>
+            <div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-orange-500 rounded-full"></div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="flex gap-6 mb-8 border-b border-gray-700 pb-4">
+        <a href="#" class="text-white border-b-2 border-blue-500 pb-2">بخش پزشکان</a>
+        <a href="#" class="text-gray-400 hover:text-white transition">بخش پرستاران</a>
+        <a href="#" class="text-gray-400 hover:text-white transition">داده های عمومی</a>
+        <a href="#" class="text-gray-400 hover:text-white transition">تنظیمات</a>
+    </nav>
+
+    <div class="grid grid-cols-12 gap-6">
+        <!-- Left Sidebar -->
+        <div class="col-span-3 space-y-6">
+            <!-- Stats Cards -->
+            <div class="stat-card rounded-xl p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">تعداد کاربران</span>
+                    <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold mb-1">۵۶۱</div>
+                <div class="text-xs text-green-400">↑ ۱۲٪ نسبت به ماه قبل</div>
+            </div>
+
+            <div class="stat-card rounded-xl p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">میلیون تومان</span>
+                    <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold mb-1">۱.۲</div>
+                <div class="text-xs text-gray-400">درآمد ماهانه</div>
+            </div>
+
+            <div class="stat-card rounded-xl p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">هزار</span>
+                    <div class="w-8 h-8 bg-pink-500/20 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold mb-1">۱۳.۴</div>
+                <div class="text-xs text-gray-400">بازدیدهای امروز</div>
+            </div>
+
+            <!-- Chart 1 -->
+            <div class="card p-6">
+                <h3 class="text-sm text-gray-400 mb-4">آمار تجارت پزشکی</h3>
+                <div class="flex items-end justify-between h-32 gap-2">
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t chart-bar" style="height: 45%"></div>
+                        <span class="text-xs text-gray-500">فرو</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t chart-bar" style="height: 65%"></div>
+                        <span class="text-xs text-gray-500">ارد</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t chart-bar" style="height: 55%"></div>
+                        <span class="text-xs text-gray-500">خرد</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t chart-bar" style="height: 75%"></div>
+                        <span class="text-xs text-gray-500">تیر</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t chart-bar" style="height: 95%"></div>
+                        <span class="text-xs text-gray-500">مرد</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t chart-bar" style="height: 70%"></div>
+                        <span class="text-xs text-gray-500">شهر</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart 2 -->
+            <div class="card p-6">
+                <h3 class="text-sm text-gray-400 mb-4">روند مشتری مستقیم بر اساس ماه / ۱۴۰۳</h3>
+                <div class="flex items-end justify-between h-32 gap-1">
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-cyan-500 to-cyan-400 rounded-t chart-bar" style="height: 35%"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t chart-bar" style="height: 45%"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-cyan-500 to-cyan-400 rounded-t chart-bar" style="height: 55%"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t chart-bar" style="height: 40%"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-cyan-500 to-cyan-400 rounded-t chart-bar" style="height: 65%"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t chart-bar" style="height: 50%"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-cyan-500 to-cyan-400 rounded-t chart-bar" style="height: 70%"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t chart-bar" style="height: 45%"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-cyan-500 to-cyan-400 rounded-t chart-bar" style="height: 60%"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t chart-bar" style="height: 55%"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-cyan-500 to-cyan-400 rounded-t chart-bar" style="height: 75%"></div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t chart-bar" style="height: 50%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio Wave -->
+            <div class="card p-6">
+                <h3 class="text-sm text-gray-400 mb-4">صوتی استان ها</h3>
+                <div class="flex items-center justify-between h-24 gap-1">
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 40%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 60%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 45%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 80%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 55%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 70%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 50%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 90%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 65%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 75%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 55%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 85%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 60%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 70%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 50%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 95%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 65%"></div>
+                    <div class="w-1 bg-gradient-to-t from-blue-500 to-purple-500 rounded chart-bar" style="height: 80%"></div>
+                </div>
+                <div class="flex items-center justify-center gap-4 mt-4">
+                    <button class="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 4l15 8-15 8V4z"></path>
+                        </svg>
+                    </button>
+                    <button class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center hover:scale-105 transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"></path>
+                        </svg>
+                    </button>
+                    <button class="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18 4v16l-15-8 15-8z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-span-9">
+            <!-- Iran Map Placeholder -->
+            <div class="card p-8 mb-6 relative overflow-hidden" style="height: 500px;">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <svg class="w-full h-full opacity-20" viewBox="0 0 800 400" fill="none">
+                        <text x="400" y="200" text-anchor="middle" fill="white" font-size="24" opacity="0.3">نقشه ایران</text>
+                    </svg>
+                </div>
+                
+                <!-- Province Timeline Chart -->
+                <div class="absolute bottom-0 left-0 right-0 p-6">
+                    <div class="flex items-end justify-between h-32 gap-2 bg-black/30 backdrop-blur-sm rounded-lg p-4">
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-red-500 to-red-400 rounded-t chart-bar" style="height: 45px"></div>
+                            <span class="text-xs text-gray-400">فروردین</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-orange-500 to-orange-400 rounded-t chart-bar" style="height: 35px"></div>
+                            <span class="text-xs text-gray-400">اردیبهشت</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-yellow-500 to-yellow-400 rounded-t chart-bar" style="height: 55px"></div>
+                            <span class="text-xs text-gray-400">خرداد</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-green-500 to-green-400 rounded-t chart-bar" style="height: 65px"></div>
+                            <span class="text-xs text-gray-400">تیر</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-cyan-500 to-cyan-400 rounded-t chart-bar" style="height: 50px"></div>
+                            <span class="text-xs text-gray-400">مرداد</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t chart-bar" style="height: 70px"></div>
+                            <span class="text-xs text-gray-400">شهریور</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-purple-500 to-purple-400 rounded-t chart-bar" style="height: 40px"></div>
+                            <span class="text-xs text-gray-400">مهر</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-pink-500 to-pink-400 rounded-t chart-bar" style="height: 60px"></div>
+                            <span class="text-xs text-gray-400">آبان</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-red-500 to-red-400 rounded-t chart-bar" style="height: 75px"></div>
+                            <span class="text-xs text-gray-400">آذر</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-orange-500 to-orange-400 rounded-t chart-bar" style="height: 55px"></div>
+                            <span class="text-xs text-gray-400">دی</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-yellow-500 to-yellow-400 rounded-t chart-bar" style="height: 80px"></div>
+                            <span class="text-xs text-gray-400">بهمن</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 bg-gradient-to-t from-green-500 to-green-400 rounded-t chart-bar" style="height: 45px"></div>
+                            <span class="text-xs text-gray-400">اسفند</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map Controls -->
+                <div class="absolute top-6 left-6 flex flex-col gap-2">
+                    <button class="w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path>
+                        </svg>
+                    </button>
+                    <button class="w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path>
+                        </svg>
+                    </button>
+                    <button class="w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Stats Grid -->
+            <div class="grid grid-cols-4 gap-4">
+                <div class="card p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-400">تهران</span>
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    </div>
+                    <div class="text-2xl font-bold mb-1">۱۲۳</div>
+                    <div class="text-xs text-gray-500">کاربر فعال</div>
+                </div>
+
+                <div class="card p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-400">اصفهان</span>
+                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    </div>
+                    <div class="text-2xl font-bold mb-1">۸۹</div>
+                    <div class="text-xs text-gray-500">کاربر فعال</div>
+                </div>
+
+                <div class="card p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-400">شیراز</span>
+                        <div class="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                    </div>
+                    <div class="text-2xl font-bold mb-1">۶۷</div>
+                    <div class="text-xs text-gray-500">کاربر فعال</div>
+                </div>
+
+                <div class="card p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-gray-400">مشهد</span>
+                        <div class="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+                    </div>
+                    <div class="text-2xl font-bold mb-1">۹۵</div>
+                    <div class="text-xs text-gray-500">کاربر فعال</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add animation to chart bars on hover
+        document.querySelectorAll('.chart-bar').forEach(bar => {
+            bar.addEventListener('mouseenter', function() {
+                this.style.transform = 'scaleY(1.1)';
+            });
+            bar.addEventListener('mouseleave', function() {
+                this.style.transform = 'scaleY(1)';
+            });
+        });
+
+        // Animate stats on load
+        window.addEventListener('load', () => {
+            const stats = document.querySelectorAll('.stat-card, .card');
+            stats.forEach((stat, index) => {
+                setTimeout(() => {
+                    stat.style.opacity = '0';
+                    stat.style.transform = 'translateY(20px)';
+                    stat.style.transition = 'all 0.5s ease';
+                    setTimeout(() => {
+                        stat.style.opacity = '1';
+                        stat.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 50);
+            });
+        });
+    </script>
+</body>
+</html>
