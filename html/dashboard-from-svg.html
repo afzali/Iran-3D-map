@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد - پیش اسکایت</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        body {
+            background: #02060B;
+            color: #fff;
+        }
+        .card {
+            background: #1D1C21;
+            border-radius: 8px;
+        }
+        .sidebar-item {
+            background: #1E1D22;
+            border-radius: 10px;
+        }
+        .gradient-border {
+            position: relative;
+        }
+        .gradient-border::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6B6B75, transparent);
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-6">
+        <!-- Left Side -->
+        <div class="flex items-center gap-4">
+            <!-- Logo -->
+            <div class="w-12 h-12 rounded-full border-2 border-gray-800 overflow-hidden">
+                <div class="w-full h-full bg-gray-300"></div>
+            </div>
+            
+            <!-- Notification Bell -->
+            <div class="relative">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+            </div>
+            
+            <!-- Cloud Icon -->
+            <div class="relative">
+                <svg class="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 15c0 2.21 1.79 4 4 4h10c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96C16.48 6.63 14.42 5 12 5 9.58 5 7.52 6.63 6.65 9.04 4.05 9.22 2 11.36 2 14c0 .34.04.67.09 1H3z" opacity="0.4"/>
+                </svg>
+            </div>
+            
+            <!-- Location Icon -->
+            <div>
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Center - Title -->
+        <div class="text-center">
+            <h1 class="text-xl font-bold text-white">پیش اسکایت - بیش اسکایت</h1>
+            <p class="text-sm text-gray-500">۱۴۰۳/۰۹/۱۶ ساعت ۱۴:۳۰</p>
+        </div>
+
+        <!-- Right Side - Tabs -->
+        <div class="flex items-center gap-6">
+            <a href="#" class="text-white text-sm pb-1 border-b-2 border-blue-500">بخش پزشکان</a>
+            <a href="#" class="text-gray-500 text-sm hover:text-white transition">بخش پرستاران</a>
+            <a href="#" class="text-gray-500 text-sm hover:text-white transition">داده های عمومی</a>
+            <a href="#" class="text-gray-500 text-sm hover:text-white transition">تنظیمات</a>
+        </div>
+    </header>
+
+    <!-- Gradient Line -->
+    <div class="h-0.5 mb-6 gradient-border"></div>
+
+    <!-- Main Content -->
+    <div class="flex gap-6">
+        <!-- Left Sidebar -->
+        <div class="w-64 space-y-4">
+            <!-- Stats Card 1 -->
+            <div class="sidebar-item p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400">تعداد کاربران</span>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold mb-1">۵۶۱</div>
+                <div class="text-xs text-gray-500">نفر</div>
+            </div>
+
+            <!-- Stats Card 2 -->
+            <div class="sidebar-item p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400">میلیون تومان</span>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold mb-1">۱.۲</div>
+                <div class="text-xs text-gray-500">درآمد ماهانه</div>
+            </div>
+
+            <!-- Stats Card 3 -->
+            <div class="sidebar-item p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs text-gray-400">هزار</span>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold mb-1">۱۳.۴</div>
+                <div class="text-xs text-gray-500">بازدیدهای امروز</div>
+            </div>
+
+            <!-- Chart Card -->
+            <div class="card p-4">
+                <h3 class="text-xs text-gray-400 mb-4">آمار تجارت پزشکی</h3>
+                <div class="flex items-end justify-between h-32 gap-1">
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t" style="height: 40%"></div>
+                        <span class="text-[8px] text-gray-500">فرو</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t" style="height: 60%"></div>
+                        <span class="text-[8px] text-gray-500">ارد</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t" style="height: 50%"></div>
+                        <span class="text-[8px] text-gray-500">خرد</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t" style="height: 70%"></div>
+                        <span class="text-[8px] text-gray-500">تیر</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t" style="height: 90%"></div>
+                        <span class="text-[8px] text-gray-500">مرد</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div class="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t" style="height: 65%"></div>
+                        <span class="text-[8px] text-gray-500">شهر</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Content -->
+        <div class="flex-1">
+            <!-- Main Card -->
+            <div class="card p-6 h-full">
+                <div class="text-sm text-gray-400 mb-4">محتوای اصلی داشبورد</div>
+                <div class="h-96 flex items-center justify-center text-gray-600">
+                    <p>نقشه یا محتوای اصلی در اینجا قرار می‌گیرد</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="w-64 space-y-4">
+            <!-- Action Buttons -->
+            <div class="space-y-3">
+                <div class="sidebar-item p-4 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                    </svg>
+                </div>
+
+                <div class="sidebar-item p-4 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                    </svg>
+                </div>
+
+                <div class="sidebar-item p-4">
+                    <div class="flex items-center justify-center">
+                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="sidebar-item p-4">
+                    <div class="flex items-center justify-center">
+                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Info Cards -->
+            <div class="card p-4">
+                <h3 class="text-xs text-gray-400 mb-3">اطلاعات تکمیلی</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">تهران</span>
+                        <span class="text-white">۱۲۳</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">اصفهان</span>
+                        <span class="text-white">۸۹</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">شیراز</span>
+                        <span class="text-white">۶۷</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add any interactive functionality here
+        console.log('Dashboard loaded');
+    </script>
+</body>
+</html>
