@@ -1,0 +1,93 @@
+const MAP_CONFIG = {
+    "provinces": {
+        "extrudeDepth": 37,
+        "bevelThickness": 2,
+        "bevelSize": 2,
+        "bevelSegments": 3,
+        "curveSegments": 8,
+        "defaultOpacity": 1,
+        "defaultEmissiveIntensity": 0,
+        "metalness": 0,
+        "roughness": 0.7,
+        "clearcoat": 0.85,
+        "clearcoatRoughness": 0.4,
+        "reflectivity": 0.7,
+        "borderOpacity": 1,
+        "borderWidth": 6.5,
+        "edgeAngle": 36,
+        "borderGlowIntensity": 1.6,
+        "borderColor": null,
+        "borderOnTopOnly": false,
+        "hoverHeight": 35,
+        "hoverOpacity": 1,
+        "hoverEmissiveIntensity": 0,
+        "hoverBorderOpacity": 1,
+        "hoverScale": 1,
+        "hoverAnimationDuration": 1000,
+        "resetAnimationDuration": 400,
+        "patternOpacity": 0,
+        "patternLineOpacity": 0.12,
+        "patternDotOpacity": 0.05,
+        "patternLineSpacing": 5,
+        "patternDotSpacing": 12,
+        "patternRepeat": 4
+    },
+    "water": {
+        "extrudeDepth": 33,
+        "bevelThickness": 3,
+        "bevelSize": 2,
+        "bevelSegments": 3,
+        "curveSegments": 8,
+        "opacity": 1,
+        "emissiveIntensity": 0.5,
+        "metalness": 0.15,
+        "roughness": 0.3,
+        "clearcoat": 0.4,
+        "clearcoatRoughness": 0.3,
+        "reflectivity": 0.7,
+        "borderOpacity": 1,
+        "borderWidth": 5,
+        "edgeAngle": 35,
+        "borderGlowIntensity": 1,
+        "borderColor": null,
+        "borderOnTopOnly": true,
+        "patternOpacity": 0.5,
+        "patternLineOpacity": 0.06,
+        "patternDotOpacity": 0.04,
+        "patternLineSpacing": 4,
+        "patternDotSpacing": 8,
+        "patternRepeat": 4
+    },
+    "bloom": {
+        "strength": 0.1,
+        "radius": 0.95,
+        "threshold": 0.75
+    },
+    "camera": {
+        "fov": 45,
+        "near": 1,
+        "far": 3000,
+        "positionX": 0,
+        "positionY": 500,
+        "positionZ": 800,
+        "minDistance": 300,
+        "maxDistance": 1500,
+        "autoRotateSpeed": 0.5
+    },
+    "lighting": {
+        "ambientIntensity": 0.15,
+        "directionalIntensity": 0.5,
+        "rimLight1Intensity": 0.8,
+        "rimLight2Intensity": 0.5,
+        "rimLight3Intensity": 0.4
+    },
+    "background": {
+        "vignette": 0.8
+    },
+    "waterColors": {
+        "caspian": 48093,
+        "southWaters": 48093,
+        "urmia": 48093,
+        "jazmourian": 48093
+    }
+};

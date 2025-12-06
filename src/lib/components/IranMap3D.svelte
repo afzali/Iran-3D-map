@@ -14,13 +14,16 @@
 	let provinces = [];
 	let waterBodies = [];
 	let hoveredProvince = null;
-	let autoRotate = true;
+	let autoRotate = false;
 	let waterVisible = true;
 	let provincesVisible = true;
 	let svgData = '';
 	
 	// Light references for real-time updates
 	let ambientLight, directionalLight, rimLight1, rimLight2, rimLight3;
+	
+	// Animation tracking
+	let activeAnimations = new Map();
 	
 	// Export control functions
 	export function toggleRotation() {
@@ -455,6 +458,49 @@
 		const raycaster = new THREE.Raycaster();
 		const mouse = new THREE.Vector2();
 		
+		// Animation helper function with cancellation support
+		function animateProvince(province, targetY, targetOpacity, targetEmissive, targetScale, duration) {
+			// Cancel any existing animation for this province
+			if (activeAnimations.has(province.id)) {
+				cancelAnimationFrame(activeAnimations.get(province.id));
+				activeAnimations.delete(province.id);
+			}
+			
+			const startY = province.mesh.position.y;
+			const startOpacity = province.mesh.material.opacity;
+			const startEmissive = province.mesh.material.emissiveIntensity;
+			const startScale = province.mesh.scale.x;
+			const startTime = performance.now();
+			
+			function animate() {
+				const elapsed = performance.now() - startTime;
+				const progress = Math.min(elapsed / duration, 1);
+				
+				// Easing function (ease-out-cubic)
+				const eased = 1 - Math.pow(1 - progress, 3);
+				
+				province.mesh.position.y = startY + (targetY - startY) * eased;
+				province.mesh.material.opacity = startOpacity + (targetOpacity - startOpacity) * eased;
+				province.mesh.material.emissiveIntensity = startEmissive + (targetEmissive - startEmissive) * eased;
+				
+				const scale = startScale + (targetScale - startScale) * eased;
+				province.mesh.scale.set(scale, scale, scale);
+				
+				province.mesh.material.needsUpdate = true;
+				
+				if (progress < 1) {
+					const animId = requestAnimationFrame(animate);
+					activeAnimations.set(province.id, animId);
+				} else {
+					// Animation complete, remove from tracking
+					activeAnimations.delete(province.id);
+				}
+			}
+			
+			const animId = requestAnimationFrame(animate);
+			activeAnimations.set(province.id, animId);
+		}
+		
 		function onMouseMove(event) {
 			mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
 			mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -467,25 +513,53 @@
 				const province = provinces.find(p => p.mesh === intersected);
 				
 				if (province && province !== hoveredProvince) {
-					// Reset previous hover
+					// Reset ALL provinces first to ensure only one is hovered
+					provinces.forEach(p => {
+						if (p !== province && p !== hoveredProvince) {
+							// Force reset any province that might be stuck
+							if (activeAnimations.has(p.id)) {
+								cancelAnimationFrame(activeAnimations.get(p.id));
+								activeAnimations.delete(p.id);
+							}
+							p.mesh.position.y = 0;
+							p.mesh.material.opacity = MAP_CONFIG.provinces.defaultOpacity;
+							p.mesh.material.emissiveIntensity = MAP_CONFIG.provinces.defaultEmissiveIntensity;
+							p.mesh.scale.set(1, 1, 1);
+							if (p.wireframe) {
+								p.wireframe.material.opacity = MAP_CONFIG.provinces.borderOpacity;
+							}
+							p.mesh.material.needsUpdate = true;
+						}
+					});
+					
+					// Reset previous hover with animation
 					if (hoveredProvince) {
-						hoveredProvince.mesh.position.y = 0;
-						hoveredProvince.mesh.material.opacity = MAP_CONFIG.provinces.defaultOpacity;
-						hoveredProvince.mesh.material.emissiveIntensity = MAP_CONFIG.provinces.defaultEmissiveIntensity;
+						animateProvince(
+							hoveredProvince,
+							0,
+							MAP_CONFIG.provinces.defaultOpacity,
+							MAP_CONFIG.provinces.defaultEmissiveIntensity,
+							1,
+							MAP_CONFIG.provinces.resetAnimationDuration
+						);
 						if (hoveredProvince.wireframe) {
 							hoveredProvince.wireframe.material.opacity = MAP_CONFIG.provinces.borderOpacity;
 						}
 					}
 					
-					// Apply hover effect
+					// Apply hover effect with animation
 					hoveredProvince = province;
-					province.mesh.position.y = MAP_CONFIG.provinces.hoverHeight;
-					province.mesh.material.opacity = MAP_CONFIG.provinces.hoverOpacity;
-					province.mesh.material.emissiveIntensity = MAP_CONFIG.provinces.hoverEmissiveIntensity;
+					animateProvince(
+						province,
+						MAP_CONFIG.provinces.hoverHeight,
+						MAP_CONFIG.provinces.hoverOpacity,
+						MAP_CONFIG.provinces.hoverEmissiveIntensity,
+						MAP_CONFIG.provinces.hoverScale,
+						MAP_CONFIG.provinces.hoverAnimationDuration
+					);
 					if (province.wireframe) {
 						province.wireframe.material.opacity = MAP_CONFIG.provinces.hoverBorderOpacity || 1;
 					}
-					province.mesh.material.needsUpdate = true;
 					
 					// Dispatch event to update province info
 					dispatch('provinceHover', {
@@ -494,14 +568,18 @@
 					});
 				}
 			} else if (hoveredProvince) {
-				// Reset hover when mouse leaves
-				hoveredProvince.mesh.position.y = 0;
-				hoveredProvince.mesh.material.opacity = MAP_CONFIG.provinces.defaultOpacity;
-				hoveredProvince.mesh.material.emissiveIntensity = MAP_CONFIG.provinces.defaultEmissiveIntensity;
+				// Reset hover when mouse leaves with animation
+				animateProvince(
+					hoveredProvince,
+					0,
+					MAP_CONFIG.provinces.defaultOpacity,
+					MAP_CONFIG.provinces.defaultEmissiveIntensity,
+					1,
+					MAP_CONFIG.provinces.resetAnimationDuration
+				);
 				if (hoveredProvince.wireframe) {
 					hoveredProvince.wireframe.material.opacity = MAP_CONFIG.provinces.borderOpacity;
 				}
-				hoveredProvince.mesh.material.needsUpdate = true;
 				hoveredProvince = null;
 				
 				// Dispatch event to reset province info
@@ -512,6 +590,10 @@
 		window.addEventListener('mousemove', onMouseMove);
 		
 		return () => {
+			// Cancel all active animations
+			activeAnimations.forEach(animId => cancelAnimationFrame(animId));
+			activeAnimations.clear();
+			
 			window.removeEventListener('resize', handleResize);
 			window.removeEventListener('mousemove', onMouseMove);
 			renderer.dispose();

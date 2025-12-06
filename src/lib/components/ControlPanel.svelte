@@ -278,6 +278,10 @@ function resetDefaults() {
 </div>
 
 <h3>✨ استان‌ها - هاور</h3>
+<div style="background: rgba(0,255,100,0.1); border: 1px solid rgba(0,255,150,0.3); border-radius: 8px; padding: 12px; margin-bottom: 15px; font-size: 11px; color: rgba(150,255,200,0.9);">
+	<div style="font-weight: bold; margin-bottom: 5px; color: #00ff88;">✅ انیمیشن smooth فعال است</div>
+	<div>استان‌ها با انیمیشن نرم بالا می‌آیند</div>
+</div>
 <div class="control-group">
 	<label><span class="value">{config.provinces.hoverHeight}</span><span class="range">(20-100)</span>ارتفاع بالا آمدن</label>
 	<input type="range" min="20" max="100" step="5" value={config.provinces.hoverHeight} on:input={handleInput('provinces.hoverHeight')} />
@@ -295,8 +299,12 @@ function resetDefaults() {
 	<input type="range" min="1" max="1.1" step="0.01" value={config.provinces.hoverScale} on:input={handleInput('provinces.hoverScale')} />
 </div>
 <div class="control-group">
-	<label><span class="value">{config.provinces.hoverAnimationDuration}</span><span class="range">(200-1000)</span>مدت انیمیشن (ms)</label>
+	<label><span class="value">{config.provinces.hoverAnimationDuration}</span><span class="range">(200-1000)</span>مدت انیمیشن بالا آمدن (ms)</label>
 	<input type="range" min="200" max="1000" step="50" value={config.provinces.hoverAnimationDuration} on:input={handleInput('provinces.hoverAnimationDuration')} />
+</div>
+<div class="control-group">
+	<label><span class="value">{config.provinces.resetAnimationDuration}</span><span class="range">(200-1000)</span>مدت انیمیشن برگشت (ms)</label>
+	<input type="range" min="200" max="1000" step="50" value={config.provinces.resetAnimationDuration} on:input={handleInput('provinces.resetAnimationDuration')} />
 </div>
 
 <h3>🎨 استان‌ها - پترن</h3>
