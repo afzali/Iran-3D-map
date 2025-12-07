@@ -1,9 +1,13 @@
+/* ═══════════════════════════════════════════════════════════════
+   🎨 Humman Dashboard Theme - Global Styles
+   ═══════════════════════════════════════════════════════════════ */
+
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
 /* ═══════════════════════════════════════════════════════════════
-   🎨 Humman Theme - Custom Colors
+   🎯 Theme Variables
    ═══════════════════════════════════════════════════════════════ */
 @theme {
 	/* Primary Colors */
@@ -21,6 +25,10 @@
 	--color-chart-cyan: #22d3ee;
 	--color-chart-yellow: #fbbf24;
 	--color-chart-red: #ef4444;
+	
+	/* Font Family */
+	--font-display: 'Vazirmatn', sans-serif;
+	--font-body: 'Vazirmatn', sans-serif;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -48,14 +56,10 @@
    🌐 Global Styles
    ═══════════════════════════════════════════════════════════════ */
 * {
+	margin: 0;
+	padding: 0;
 	box-sizing: border-box;
 	scroll-behavior: smooth;
-}
-
-:root {
-	--bg-primary: #000000;
-	--bg-secondary: #0d0d0d;
-	--vignette-opacity: 0.85;
 }
 
 html {
@@ -63,11 +67,8 @@ html {
 }
 
 body {
-	margin: 0;
-	padding: 0;
-	font-family: 'Vazirmatn', Tahoma, Geneva, Verdana, sans-serif;
+	font-family: 'Vazirmatn', sans-serif;
 	overflow: hidden;
-	min-height: 100vh;
 }
 
 /* ═══════════════════════════════════════════════════════════════
