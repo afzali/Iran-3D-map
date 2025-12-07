@@ -13,7 +13,7 @@
 		{ icon: 'verified_user', variant: 'default' }
 	];
 	export let bottomButtons = [
-		{ icon: 'logout', variant: 'default' },
+		// { icon: 'logout', variant: 'default' },
 		{ icon: 'help_outline', variant: 'default' }
 	];
 </script>

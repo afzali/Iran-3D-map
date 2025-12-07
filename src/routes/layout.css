@@ -2,6 +2,9 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
+/* Material Icons from npm */
+@import 'material-icons/iconfont/material-icons.css';
+
 /* ═══════════════════════════════════════════════════════════════
    🎨 Humman Theme - Custom Colors
    ═══════════════════════════════════════════════════════════════ */
@@ -88,4 +91,9 @@ body {
 .material-icons-round {
 	direction: ltr;
 	display: inline-block;
+	vertical-align: middle;
+	line-height: 1;
+	/* Prevent text wrapping for icon names */
+	white-space: nowrap;
+	flex-shrink: 0;
 }

@@ -66,37 +66,37 @@ export async function fetchWeather(cityName) {
 	}
 }
 
-// Map WMO weather codes to Material Icons
+// Map WMO weather codes to Material Icons (using only valid outlined icons)
 function getWeatherIcon(code) {
 	// Clear sky
 	if (code === 0) return { icon: 'wb_sunny', color: 'text-yellow-500' };
 	
 	// Mainly clear, partly cloudy
-	if (code === 1 || code === 2) return { icon: 'partly_cloudy_day', color: 'text-yellow-400' };
+	if (code === 1 || code === 2) return { icon: 'wb_cloudy', color: 'text-yellow-400' };
 	
 	// Overcast
 	if (code === 3) return { icon: 'cloud', color: 'text-gray-400' };
 	
 	// Fog
-	if (code >= 45 && code <= 48) return { icon: 'foggy', color: 'text-gray-500' };
+	if (code >= 45 && code <= 48) return { icon: 'cloud', color: 'text-gray-500' };
 	
 	// Drizzle
-	if (code >= 51 && code <= 57) return { icon: 'grain', color: 'text-blue-300' };
+	if (code >= 51 && code <= 57) return { icon: 'water_drop', color: 'text-blue-300' };
 	
 	// Rain
-	if (code >= 61 && code <= 67) return { icon: 'rainy', color: 'text-blue-400' };
+	if (code >= 61 && code <= 67) return { icon: 'water_drop', color: 'text-blue-400' };
 	
 	// Snow
 	if (code >= 71 && code <= 77) return { icon: 'ac_unit', color: 'text-blue-200' };
 	
 	// Rain showers
-	if (code >= 80 && code <= 82) return { icon: 'rainy', color: 'text-blue-500' };
+	if (code >= 80 && code <= 82) return { icon: 'water_drop', color: 'text-blue-500' };
 	
 	// Snow showers
-	if (code >= 85 && code <= 86) return { icon: 'weather_snowy', color: 'text-blue-200' };
+	if (code >= 85 && code <= 86) return { icon: 'ac_unit', color: 'text-blue-200' };
 	
 	// Thunderstorm
-	if (code >= 95 && code <= 99) return { icon: 'thunderstorm', color: 'text-purple-400' };
+	if (code >= 95 && code <= 99) return { icon: 'bolt', color: 'text-purple-400' };
 	
 	// Default
 	return { icon: 'wb_sunny', color: 'text-yellow-500' };

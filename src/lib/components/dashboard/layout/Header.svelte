@@ -12,7 +12,7 @@
 	 * @prop {string} aqi - شاخص کیفیت هوا
 	 */
 	export let title = 'هومان - نبض انسانیت';
-	export let avatarSrc = 'https://lh3.googleusercontent.com/aida-public/AB6AXuA7nMgg7lBJUr91M94TZvj9h2GkkFxMFUdOc5-Fucdj55r5U6giatL-4TK7CmxV9yXlpqqxDZdIg8dj7CGZWokjLTKRJINrbdOkBLJt0SELO9Y7-0aj8X7fHZbnO4SroAP_m1G9WlYum1QCpcd41Wh905ZzNXIX27CJXXYLvFK8vtfXK8fFa9gJCKy-MB5RYv9MiQHmNuH13idf-dFXJ-dqUFomuSzoUbz1VLP5NaKerWAOuJd5Y6RdLHFKqIJvejUaUU9KGNizvMHK';
+	export let avatarSrc = '/user.svg';
 	export let tabs = [
 		{ id: 'about', label: 'درباره هومان', href: '#' },
 		{ id: 'rescuer', label: 'ناجی باشیم', href: '#' },
@@ -52,6 +52,8 @@
 		<CitySelector {city} />
 		<WeatherInfo {time} {aqi} />
 		<IconButton icon="notifications" variant="ghost" />
-		<Avatar src={avatarSrc} />
+		<a href="/login" aria-label="مشاهده صفحه ورود">
+			<Avatar src={avatarSrc} />
+		</a>
 	</div>
 </header>

@@ -540,6 +540,7 @@
 		}
 		
 		function onMouseMove(event) {
+			if (!container) return;
 			const rect = container.getBoundingClientRect();
 			mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
 			mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
