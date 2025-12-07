@@ -1,3 +1,37 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+/* Global Styles for Iran 3D Map */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+:root {
+	--bg-primary: #000000;
+	--bg-secondary: #0d0d0d;
+	--vignette-opacity: 0.85;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'vazirmatn', Tahoma, Geneva, Verdana, sans-serif;
+	background: radial-gradient(ellipse at center, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+	overflow: hidden;
+	min-height: 100vh;
+}
+
+body::before {
+	content: '';
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, var(--vignette-opacity)) 100%);
+	pointer-events: none;
+	z-index: 1;
+}
