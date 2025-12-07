@@ -1,6 +1,7 @@
 <script>
 	import { Header, RightPanel, LeftPanel, MapControls, TimeLine } from '$lib/components/dashboard';
 	import Iran from '$lib/components/iran/Iran.svelte';
+	import FloatingParticles from '$lib/components/effects/FloatingParticles.svelte';
 	
 	let iranMap;
 	let showPanels = true;
@@ -164,6 +165,9 @@
 			
 			<!-- Timeline -->
 			<TimeLine />
+			
+			<!-- Floating Particles Effect -->
+			<FloatingParticles />
 		</main>
 		
 		<!-- Right Sidebar (Icons) - سمت راست -->
