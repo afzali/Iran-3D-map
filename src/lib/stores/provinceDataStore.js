@@ -50,6 +50,28 @@ function generateHonorData() {
 	};
 }
 
+function generateTimelineData() {
+	const months = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'];
+	const data = [];
+	
+	// Generate ~10 bars per month (120 total for the year)
+	months.forEach((month, monthIndex) => {
+		for (let day = 0; day < 10; day++) {
+			const value = Math.floor(Math.random() * 80) + 10;
+			const isHighlight = Math.random() > 0.85;
+			data.push({
+				month,
+				monthIndex,
+				day: day + 1,
+				value,
+				type: isHighlight ? (Math.random() > 0.5 ? 'warning' : 'danger') : 'normal'
+			});
+		}
+	});
+	
+	return data;
+}
+
 // Province-specific data cache
 const provinceDataCache = new Map();
 
@@ -59,7 +81,8 @@ function getOrCreateProvinceData(province) {
 			rescue: generateRescueData(),
 			performance: generatePerformanceData(),
 			donors: generateDonorData(),
-			honor: generateHonorData()
+			honor: generateHonorData(),
+			timeline: generateTimelineData()
 		});
 	}
 	return provinceDataCache.get(province);
@@ -70,8 +93,12 @@ export const provinceData = writable({
 	rescue: generateRescueData(),
 	performance: generatePerformanceData(),
 	donors: generateDonorData(),
-	honor: generateHonorData()
+	honor: generateHonorData(),
+	timeline: generateTimelineData()
 });
+
+// Selected timeline bar index (null = none selected)
+export const selectedTimelineIndex = writable(null);
 
 // Update data when province changes
 selectedProvince.subscribe((province) => {
@@ -89,8 +116,16 @@ export function refreshProvinceData() {
 		rescue: generateRescueData(),
 		performance: generatePerformanceData(),
 		donors: generateDonorData(),
-		honor: generateHonorData()
+		honor: generateHonorData(),
+		timeline: generateTimelineData()
 	};
 	provinceDataCache.set(currentProvince, newData);
 	provinceData.set(newData);
+}
+
+// Toggle timeline bar selection
+export function toggleTimelineSelection(index) {
+	selectedTimelineIndex.update((current) => (current === index ? null : index));
+	// When a bar is selected, refresh all data
+	refreshProvinceData();
 }
