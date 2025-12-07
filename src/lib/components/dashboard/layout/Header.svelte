@@ -25,7 +25,7 @@
 	export let aqi = '۲۷۰';
 </script>
 
-<header class="h-16 border-b border-gray-800 bg-surface-dark/95 flex items-center justify-between px-4 z-20 shrink-0">
+<header class="h-16 border-b border-gray-800 bg-surface-dark/95 flex items-center justify-between px-4 z-30 shrink-0">
 	<!-- Right Side (Logo & Title) - سمت راست -->
 	<div class="flex items-center gap-3">
 		<IconButton icon="grid_view" variant="ghost" iconStyle="filled" />
