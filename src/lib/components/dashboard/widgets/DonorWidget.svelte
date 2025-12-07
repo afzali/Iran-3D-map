@@ -1,47 +1,29 @@
 <script>
+	import { provinceData } from '$lib/stores/provinceDataStore.js';
+
 	/**
-	 * DonorWidget - ویجت خیرین استان‌ها
-	 * @prop {string} title - عنوان ویجت
-	 * @prop {Array} data - داده‌های نمودار
-	 * @prop {Array} labels - برچسب‌های استان‌ها
+	 * DonorWidget - ویجت خیرین استان‌ها (Horizontal Bar with Inside Labels)
 	 */
 	export let title = 'خیرین استان‌ها';
-	export let data = [
-		{ height: 10, offset: -8, color: 'blue' },
-		{ height: 12, offset: 4, color: 'purple' },
-		{ height: 8, offset: -4, color: 'blue' },
-		{ height: 14, offset: 6, color: 'purple' },
-		{ height: 6, offset: -2, color: 'blue' },
-		{ height: 10, offset: 2, color: 'purple' },
-		{ height: 12, offset: -6, color: 'blue' },
-		{ height: 8, offset: 1, color: 'purple' },
-		{ height: 16, offset: -10, color: 'blue' },
-		{ height: 4, offset: 2, color: 'purple' },
-		{ height: 10, offset: -4, color: 'blue' },
-		{ height: 12, offset: 6, color: 'purple' }
-	];
-	export let labels = ['تهران', 'خراسان', 'تبریز', 'اردبیل', 'کرمان', 'مازندران', 'سیستان', 'سمنان', 'اصفهان'];
+
+	$: data = $provinceData.donors;
+	$: maxVal = Math.max(...data.map((d) => d.amount));
 </script>
 
 <div class="bg-[#1e1e24] rounded-lg p-4 border border-gray-800 w-full">
-	<h3 class="text-gray-300 text-sm mb-5 text-center">{title}</h3>
-	<div class="h-40 relative flex items-center justify-between px-3 flex-row-reverse">
-		<!-- Center Line -->
-		<div class="absolute w-full h-px bg-white/20 top-1/2 left-0 z-0"></div>
-		
-		<!-- Bars -->
-		{#each data as bar, i}
-			<div 
-				class="w-2 rounded-full z-10 {bar.color === 'blue' ? 'bg-chart-blue' : 'bg-chart-purple'}"
-				style="height: {bar.height * 4}px; margin-bottom: {bar.offset * 4}px;"
-			></div>
-		{/each}
-	</div>
-	
-	<!-- Labels -->
-	<div class="flex justify-between text-[11px] text-gray-500 mt-4 px-2 text-center ">
-		{#each labels as label}
-			<span>{label}</span>
+	<h3 class="text-gray-300 text-sm mb-4 text-center">{title}</h3>
+	<div class="flex flex-col gap-2">
+		{#each data as d, i}
+			<div class="relative h-6 bg-gray-800/50 rounded overflow-hidden">
+				<div
+					class="absolute inset-y-0 right-0 rounded transition-all"
+					style="width: {(d.amount / maxVal) * 100}%; background: {i % 2 === 0 ? '#a855f7' : '#22d3ee'};"
+				></div>
+				<div class="absolute inset-0 flex items-center justify-between px-2 text-xs">
+					<span class="text-white font-medium z-10">{d.amount} میلیون</span>
+					<span class="text-gray-300 z-10">{d.province}</span>
+				</div>
+			</div>
 		{/each}
 	</div>
 </div>

@@ -1,14 +1,21 @@
 <script>
 	import { StatCard } from '../ui';
+	import { provinceData } from '$lib/stores/provinceDataStore.js';
 	
 	/**
-	 * HonorWidget - ویجت افتخارات
-	 * @prop {Array} stats - آمار افتخارات
+	 * HonorWidget - ویجت افتخارات (داینامیک)
 	 */
-	export let stats = [
-		{ icon: 'electric_bolt', value: '۳.۴', unit: 'هزار', label: 'تعداد شوک‌ها' },
-		{ icon: 'monitor_heart', value: '۱.۲', unit: 'میلیون', label: 'ضربان برگشته' },
-		{ icon: 'favorite_border', value: '۵۴۱', unit: 'نفر', label: 'جان‌های نجات‌یافته' }
+	
+	// Convert number to Persian digits
+	function toPersianDigits(num) {
+		const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+		return String(num).replace(/\d/g, (d) => persianDigits[parseInt(d)]);
+	}
+	
+	$: stats = [
+		{ icon: 'electric_bolt', value: toPersianDigits($provinceData.honor.shocks), unit: 'هزار', label: 'تعداد شوک‌ها' },
+		{ icon: 'monitor_heart', value: toPersianDigits($provinceData.honor.heartbeats), unit: 'میلیون', label: 'ضربان برگشته' },
+		{ icon: 'favorite_border', value: toPersianDigits($provinceData.honor.savedLives), unit: 'نفر', label: 'جان‌های نجات‌یافته' }
 	];
 </script>
 

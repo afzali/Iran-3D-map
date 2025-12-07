@@ -1,51 +1,47 @@
 <script>
+	import { provinceData } from '$lib/stores/provinceDataStore.js';
+
 	/**
-	 * RescueWidget - ویجت افراد نجات یافته (نمودار میله‌ای)
-	 * @prop {string} title - عنوان ویجت
-	 * @prop {Array} data - داده‌های نمودار
-	 * @prop {Array} labels - برچسب‌های محور X
+	 * RescueWidget - ویجت افراد نجات یافته (نمودار Diverging)
 	 */
 	export let title = 'افراد نجات یافته';
-	export let data = [
-		{ purple: 8, blue: 6 },
-		{ purple: 10, blue: 4 },
-		{ purple: 12, blue: 5 },
-		{ purple: 16, blue: 8 },
-		{ purple: 8, blue: 10 }
-	];
-	export let labels = ['کودک', 'نوجوان', 'جوان', 'میان سال', 'سالمند'];
+
+	$: data = $provinceData.rescue;
+	$: maxVal = Math.max(...data.map((d) => Math.max(d.male, d.female)));
 </script>
 
 <div class="bg-[#1e1e24] rounded-lg p-4 border border-gray-800 w-full">
-	<h3 class="text-gray-300 text-sm mb-5 text-center">{title}</h3>
-	<div class="h-40 flex items-end justify-around px-4 relative">
-		<!-- Grid Lines -->
-		<div class="absolute inset-0 flex flex-col justify-between pointer-events-none z-0">
-			<div class="w-full h-px bg-gray-700/30"></div>
-			<div class="w-full h-px bg-gray-700/30"></div>
-			<div class="w-full h-px bg-gray-700/30"></div>
-			<div class="w-full h-px bg-gray-700/30"></div>
-		</div>
+	<h3 class="text-gray-300 text-sm mb-4 text-center">{title}</h3>
+	<div class="h-40 flex items-center justify-around px-4 relative">
+		<!-- Center baseline -->
+		<div class="absolute w-full h-px bg-gray-600 top-1/2 left-0 z-0"></div>
 		
-		<!-- Bars -->
-		{#each data as bar, i}
-			<div class="w-4 flex flex-col gap-1 z-10 group">
+		<!-- Diverging bars -->
+		{#each data as d, i}
+			<div class="flex flex-col items-center gap-0 z-10">
+				<!-- Male bar (goes up) -->
 				<div 
-					class="w-full bg-chart-purple rounded-t-sm opacity-80 group-hover:opacity-100 transition"
-					style="height: {bar.purple * 4}px;"
+					class="w-4 bg-purple-500 rounded-t-sm transition-all"
+					style="height: {(d.male / maxVal) * 60}px;"
 				></div>
+				<!-- Female bar (goes down) -->
 				<div 
-					class="w-full bg-chart-blue rounded-b-sm opacity-80 group-hover:opacity-100 transition"
-					style="height: {bar.blue * 4}px;"
+					class="w-4 bg-cyan-400 rounded-b-sm transition-all"
+					style="height: {(d.female / maxVal) * 60}px;"
 				></div>
 			</div>
 		{/each}
 	</div>
 	
 	<!-- Labels -->
-	<div class="flex justify-between text-xs text-gray-500 mt-4 px-3">
-		{#each labels as label}
-			<span>{label}</span>
+	<div class="flex justify-around text-xs text-gray-500 mt-2 px-3">
+		{#each data as d}
+			<span>{d.label}</span>
 		{/each}
+	</div>
+	
+	<div class="flex justify-center gap-4 text-xs text-gray-400 mt-3">
+		<span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-purple-500"></span> مرد</span>
+		<span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-cyan-400"></span> زن</span>
 	</div>
 </div>
