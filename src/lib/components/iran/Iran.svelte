@@ -127,7 +127,7 @@
 </script>
 
 <div class="relative h-full w-full">
-	<IranMap3D bind:this={mapComponent} on:provinceHover={handleProvinceHover} />
+	<IranMap3D bind:this={mapComponent} config={activeConfig} on:provinceHover={handleProvinceHover} />
 	
 	{#if showControlPanel}
 	<ControlPanel 

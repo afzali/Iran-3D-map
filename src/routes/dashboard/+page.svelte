@@ -5,6 +5,104 @@
 	let iranMap;
 	let showPanels = true;
 	
+	// Custom map configuration for dashboard
+	const dashboardMapConfig = {
+		provinces: {
+			extrudeDepth: 40,
+			bevelThickness: 3,
+			bevelSize: 2,
+			bevelSegments: 3,
+			curveSegments: 8,
+			defaultOpacity: 1,
+			defaultEmissiveIntensity: 0,
+			metalness: 0.05,
+			roughness: 1,
+			clearcoat: 0.85,
+			clearcoatRoughness: 0.4,
+			reflectivity: 0.15,
+			borderOpacity: 0.25,
+			borderWidth: 10,
+			edgeAngle: 20,
+			borderGlowIntensity: 0.3,
+			borderColor: null,
+			borderOnTopOnly: false,
+			hoverHeight: 35,
+			hoverOpacity: 1,
+			hoverEmissiveIntensity: 1,
+			hoverBorderOpacity: 1,
+			hoverScale: 1,
+			hoverAnimationDuration: 350,
+			resetAnimationDuration: 250,
+			patternOpacity: 0.45,
+			patternLineOpacity: 0,
+			patternDotOpacity: 0,
+			patternLineSpacing: 2,
+			patternDotSpacing: 4,
+			patternRepeat: 4
+		},
+		water: {
+			extrudeDepth: 25,
+			bevelThickness: 3,
+			bevelSize: 2,
+			bevelSegments: 3,
+			curveSegments: 8,
+			opacity: 1,
+			emissiveIntensity: 0,
+			metalness: 0.15,
+			roughness: 0.3,
+			clearcoat: 1,
+			clearcoatRoughness: 0.3,
+			reflectivity: 0.7,
+			borderOpacity: 0,
+			borderWidth: 1,
+			edgeAngle: 32,
+			borderGlowIntensity: 1,
+			borderColor: null,
+			borderOnTopOnly: true,
+			patternOpacity: 0.5,
+			patternLineOpacity: 0.06,
+			patternDotOpacity: 0.04,
+			patternLineSpacing: 4,
+			patternDotSpacing: 8,
+			patternRepeat: 4
+		},
+		bloom: {
+			strength: 0.1,
+			radius: 0.75,
+			threshold: 0.85
+		},
+		camera: {
+			fov: 45,
+			near: 1,
+			far: 3000,
+			positionX: 0,
+			positionY: 650,
+			positionZ: 650,
+			targetX: 0,
+			targetY: -70,
+			targetZ: 50,
+			minDistance: 600,
+			maxDistance: 1500,
+			autoRotateSpeed: 0.5
+		},
+		lighting: {
+			ambientIntensity: 0.2,
+			directionalIntensity: 0.4,
+			rimLight1Intensity: 0.5,
+			rimLight2Intensity: 0.5,
+			rimLight3Intensity: 0.4
+		},
+		background: {
+			vignette: 0.8
+		},
+		waterColors: {
+			caspian: 0x00bbdd,
+			southWaters: 0x00bbdd,
+			urmia: 0x00bbdd,
+			jazmourian: 0x00bbdd
+		}
+	};
+	
 	function handleZoomIn() {
 		console.log('ZoomIn clicked');
 		if (iranMap) iranMap.zoomIn();
@@ -52,6 +150,7 @@
 					showControlPanel={false}
 					showInfoPanel={false}
 					showMapControls={false}
+					customConfig={dashboardMapConfig}
 				/>
 			</div>
 			

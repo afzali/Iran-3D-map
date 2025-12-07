@@ -5,10 +5,16 @@
 	import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 	import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 	import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-	import { MAP_CONFIG, BACKGROUND_COLORS, provinceColors, provinceNames, regionGroups } from '$lib/config';
+	import { MAP_CONFIG as DEFAULT_MAP_CONFIG, BACKGROUND_COLORS, provinceColors, provinceNames, regionGroups } from '$lib/config';
 	import { log } from '$lib/utils/logger';
 	
 	const dispatch = createEventDispatcher();
+	
+	// Custom config prop (optional)
+	export let config = null;
+	
+	// Use custom config or default
+	$: MAP_CONFIG = config || DEFAULT_MAP_CONFIG;
 	
 	let container;
 	let scene, camera, renderer, controls, composer, bloomPass;
@@ -433,6 +439,15 @@
 		controls.maxPolarAngle = Math.PI / 2.1;
 		controls.autoRotate = true;
 		controls.autoRotateSpeed = MAP_CONFIG.camera.autoRotateSpeed;
+		
+		// Set camera target (where camera looks at)
+		if (MAP_CONFIG.camera.targetX !== undefined) {
+			controls.target.set(
+				MAP_CONFIG.camera.targetX,
+				MAP_CONFIG.camera.targetY || 0,
+				MAP_CONFIG.camera.targetZ || 0
+			);
+		}
 		
 		// Setup lights
 		setupLights();
