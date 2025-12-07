@@ -90,6 +90,28 @@
 		}
 	}
 	
+	export function zoomIn() {
+		if (mapComponent) {
+			mapComponent.zoomIn();
+		}
+	}
+	
+	export function zoomOut() {
+		if (mapComponent) {
+			mapComponent.zoomOut();
+		}
+	}
+	
+	export function toggleControlPanel() {
+		showControlPanel = !showControlPanel;
+	}
+	
+	export function updateSize() {
+		if (mapComponent) {
+			mapComponent.updateSize();
+		}
+	}
+	
 	function handleProvinceHover(event) {
 		const data = event.detail;
 		if (data) {
@@ -104,7 +126,7 @@
 	}
 </script>
 
-<div class="relative h-screen w-screen">
+<div class="relative h-full w-full">
 	<IranMap3D bind:this={mapComponent} on:provinceHover={handleProvinceHover} />
 	
 	{#if showControlPanel}

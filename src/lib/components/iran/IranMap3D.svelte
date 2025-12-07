@@ -43,6 +43,28 @@
 		controls.target.set(0, 0, 0);
 	}
 
+	export function zoomIn() {
+		if (!camera) return;
+		camera.position.y *= 0.85;
+		camera.position.z *= 0.85;
+	}
+
+	export function zoomOut() {
+		if (!camera) return;
+		camera.position.y *= 1.15;
+		camera.position.z *= 1.15;
+	}
+
+	export function updateSize() {
+		if (!container || !camera || !renderer || !composer) return;
+		const width = container.clientWidth;
+		const height = container.clientHeight;
+		camera.aspect = width / height;
+		camera.updateProjectionMatrix();
+		renderer.setSize(width, height);
+		composer.setSize(width, height);
+	}
+
 	export function toggleWater() {
 		waterVisible = !waterVisible;
 		waterBodies.forEach(w => {
@@ -503,8 +525,9 @@
 		}
 		
 		function onMouseMove(event) {
-			mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-			mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+			const rect = container.getBoundingClientRect();
+			mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+			mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 			
 			raycaster.setFromCamera(mouse, camera);
 			const intersects = raycaster.intersectObjects(provinces.map(p => p.mesh));

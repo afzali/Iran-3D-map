@@ -1,5 +1,34 @@
 <script>
 	import { Header, RightPanel, LeftPanel, MapControls, TimeLine } from '$lib/components/dashboard';
+	import Iran from '$lib/components/iran/Iran.svelte';
+	
+	let iranMap;
+	let showPanels = true;
+	
+	function handleZoomIn() {
+		console.log('ZoomIn clicked');
+		if (iranMap) iranMap.zoomIn();
+	}
+	
+	function handleZoomOut() {
+		console.log('ZoomOut clicked');
+		if (iranMap) iranMap.zoomOut();
+	}
+	
+	function handleToggleLayers() {
+		console.log('ToggleLayers clicked');
+		if (iranMap) iranMap.toggleControlPanel();
+	}
+	
+	function handleFullscreen() {
+		console.log('Fullscreen clicked, showPanels:', showPanels);
+		// Toggle panels visibility
+		showPanels = !showPanels;
+		// Update map size after transition
+		setTimeout(() => {
+			if (iranMap) iranMap.updateSize();
+		}, 350); // Wait for transition to complete (300ms + buffer)
+	}
 </script>
 
 <svelte:head>
@@ -15,28 +44,37 @@
 	<!-- Main Content -->
 	<div class="flex flex-1 h-[calc(100vh-4rem)] relative">
 		<!-- Main Map Area -->
-		<main class="flex-1 bg-black relative flex flex-col mr-16 ml-96">
-			<!-- Background Gradient -->
-			<div class="absolute inset-0 bg-gradient-to-br from-gray-900 to-black opacity-50 z-0"></div>
+		<main class="flex-1 bg-black relative flex flex-col transition-all duration-300 {showPanels ? 'mr-16 ml-96' : ''}">
+			<!-- Iran 3D Map -->
+			<div class="absolute inset-0 z-0">
+				<Iran 
+					bind:this={iranMap}
+					showControlPanel={false}
+					showInfoPanel={false}
+					showMapControls={false}
+				/>
+			</div>
 			
 			<!-- Map Controls -->
-			<MapControls />
-			
-			<!-- Map Placeholder - اینجا می‌تونید نقشه واقعی رو قرار بدید -->
-			<div class="absolute inset-0 flex items-center justify-center z-5">
-				<div class="text-gray-600 text-lg">
-					<!-- نقشه ایران اینجا قرار می‌گیرد -->
-				</div>
-			</div>
+			<MapControls 
+				on:zoomIn={handleZoomIn}
+				on:zoomOut={handleZoomOut}
+				on:toggleLayers={handleToggleLayers}
+				on:toggleFullscreen={handleFullscreen}
+			/>
 			
 			<!-- Timeline -->
 			<TimeLine />
 		</main>
 		
 		<!-- Right Sidebar (Icons) - سمت راست -->
-		<RightPanel />
+		{#if showPanels}
+			<RightPanel />
+		{/if}
 		
 		<!-- Left Sidebar (Widgets) - سمت چپ -->
-		<LeftPanel />
+		{#if showPanels}
+			<LeftPanel />
+		{/if}
 	</div>
 </div>
