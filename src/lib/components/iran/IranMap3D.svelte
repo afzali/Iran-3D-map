@@ -492,7 +492,7 @@
 		}
 		window.addEventListener('resize', handleResize);
 		
-		// Handle mouse move for hover
+		// Handle raycasting for hover & click
 		const raycaster = new THREE.Raycaster();
 		const mouse = new THREE.Vector2();
 		
@@ -539,14 +539,18 @@
 			activeAnimations.set(province.id, animId);
 		}
 		
-		function onMouseMove(event) {
-			if (!container) return;
+		function updatePointerFromEvent(event) {
+			if (!container) return null;
 			const rect = container.getBoundingClientRect();
 			mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
 			mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-			
 			raycaster.setFromCamera(mouse, camera);
-			const intersects = raycaster.intersectObjects(provinces.map(p => p.mesh));
+			return raycaster.intersectObjects(provinces.map(p => p.mesh));
+		}
+
+		function onMouseMove(event) {
+			const intersects = updatePointerFromEvent(event);
+			if (!intersects) return;
 			
 			if (intersects.length > 0) {
 				const intersected = intersects[0].object;
@@ -627,7 +631,21 @@
 			}
 		}
 		
+		function onClick(event) {
+			const intersects = updatePointerFromEvent(event);
+			if (!intersects || intersects.length === 0) return;
+			const intersected = intersects[0].object;
+			const province = provinces.find(p => p.mesh === intersected);
+			if (province) {
+				dispatch('provinceSelect', {
+					name: province.name,
+					color: province.color
+				});
+			}
+		}
+
 		window.addEventListener('mousemove', onMouseMove);
+		container?.addEventListener('click', onClick, { passive: true });
 		
 		return () => {
 			// Cancel all active animations
@@ -636,6 +654,7 @@
 			
 			window.removeEventListener('resize', handleResize);
 			window.removeEventListener('mousemove', onMouseMove);
+			container?.removeEventListener('click', onClick);
 			renderer.dispose();
 		};
 	});

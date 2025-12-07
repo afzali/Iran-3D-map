@@ -6,6 +6,7 @@
 	import MapControls from './MapControls.svelte';
 	import { SHOW_CONTROL_PANEL, BACKGROUND_COLORS, MAP_CONFIG } from '$lib/config';
 	import { log, enableGlobalOverride } from '$lib/utils/logger';
+	import { selectedCity, provinceToCity } from '$lib/stores/cityStore';
 	
 	// ═══════════════════════════════════════════════════════════════
 	// 🎛️ Props - تنظیمات نمایش اجزای مختلف
@@ -124,10 +125,24 @@
 			provinceColor = '#00ffff';
 		}
 	}
+
+	function handleProvinceSelect(event) {
+		const { name } = event.detail || {};
+		if (!name) return;
+		const mappedCity = provinceToCity[name];
+		if (mappedCity) {
+			selectedCity.set(mappedCity);
+		}
+	}
 </script>
 
 <div class="relative h-full w-full">
-	<IranMap3D bind:this={mapComponent} config={activeConfig} on:provinceHover={handleProvinceHover} />
+	<IranMap3D
+		bind:this={mapComponent}
+		config={activeConfig}
+		on:provinceHover={handleProvinceHover}
+		on:provinceSelect={handleProvinceSelect}
+	/>
 	
 	{#if showControlPanel}
 	<ControlPanel 
