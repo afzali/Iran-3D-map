@@ -1,0 +1,9 @@
+# Ignore dependencies & build artifacts to keep Docker context small
+node_modules
+.svelte-kit
+.vscode
+.git
+.gitignore
+build
+npm-debug.log*
+Dockerfile

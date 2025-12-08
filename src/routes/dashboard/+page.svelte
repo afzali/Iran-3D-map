@@ -144,7 +144,7 @@
 	<div class="flex flex-1 h-[calc(100vh-4rem)] relative">
 		<!-- Main Map Area -->
 		<main class="flex-1 bg-black relative flex flex-col transition-all duration-300 {showPanels ? 'mr-16 ml-96' : ''}">
-			<!-- Iran 3D Map -->
+			<!-- Humaan -->
 			<div class="absolute inset-0 z-0">
 				<Iran 
 					bind:this={iranMap}
