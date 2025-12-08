@@ -11,6 +11,12 @@
 	let heartAudio;
 	let whooshAudio;
 
+	// Adjustable intensities
+	const BASE_BACKGROUND_COUNT = 80;
+	const BASE_MOUSE_LIMIT = 140;
+	let ambientDensity = 1; // Free ambient particles (0.3 - 2)
+	let mouseTrailIntensity = 0.1; // Mouse-follow particles (0.2 - 1.5)
+
 	// Settings
 	const settings = {
 		particles: {
@@ -167,13 +173,16 @@
 	// Background + Mouse trail particles
 	let mouseSprites = [];
 	let backgroundSprites = [];
-	// Brighter, more golden/warm colors with glow
+	// Bright, subtle palette leaning toward white/gold
 	const PARTICLE_COLORS = [
-		{ center: 'rgba(255,223,130,0.9)', mid: 'rgba(255,200,80,0.4)', edge: 'rgba(255,180,50,0)' },  // Golden
-		{ center: 'rgba(255,180,220,0.85)', mid: 'rgba(255,130,180,0.35)', edge: 'rgba(255,100,150,0)' }, // Pink
-		{ center: 'rgba(180,255,255,0.85)', mid: 'rgba(100,230,230,0.35)', edge: 'rgba(80,200,200,0)' },  // Cyan
-		{ center: 'rgba(255,255,200,0.9)', mid: 'rgba(255,240,150,0.4)', edge: 'rgba(255,220,100,0)' },  // Light Yellow
-		{ center: 'rgba(220,180,255,0.8)', mid: 'rgba(180,130,255,0.3)', edge: 'rgba(150,100,220,0)' }   // Lavender
+		{ center: 'rgba(255,255,255,0.95)', mid: 'rgba(255,255,255,0.45)', edge: 'rgba(255,255,255,0)' },
+		{ center: 'rgba(255,247,196,0.9)', mid: 'rgba(255,233,150,0.4)', edge: 'rgba(255,210,120,0)' },
+		{ center: 'rgba(255,239,214,0.9)', mid: 'rgba(255,218,170,0.35)', edge: 'rgba(255,198,140,0)' },
+		{ center: 'rgba(248,250,255,0.9)', mid: 'rgba(214,230,255,0.4)', edge: 'rgba(190,210,255,0)' },
+		{ center: 'rgba(255,255,255,0.9)', mid: 'rgba(255,255,255,0.4)', edge: 'rgba(255,255,255,0)' },
+		{ center: 'rgba(255,247,196,0.9)', mid: 'rgba(255,233,150,0.4)', edge: 'rgba(255,210,120,0)' },
+		{ center: 'rgba(255,239,214,0.9)', mid: 'rgba(255,218,170,0.35)', edge: 'rgba(255,198,140,0)' },
+		{ center: 'rgba(248,250,255,0.9)', mid: 'rgba(214,230,255,0.4)', edge: 'rgba(190,210,255,0)' }
 	];
 
 	function createGlowTexture(size, colorIdx) {
@@ -197,7 +206,7 @@
 	// Create background particles spread across the screen
 	function initBackgroundSprites() {
 		backgroundSprites = [];
-		const count = 80; // Number of background particles
+		const count = Math.max(20, Math.round(BASE_BACKGROUND_COUNT * ambientDensity));
 		for (let i = 0; i < count; i++) {
 			const size = 20 + Math.random() * 50;
 			backgroundSprites.push({
@@ -207,7 +216,7 @@
 				vy: (Math.random() - 0.5) * 0.3,
 				size,
 				alpha: 0.3 + Math.random() * 0.5,
-				texture: createGlowTexture(size, Math.floor(Math.random() * 5)),
+				texture: createGlowTexture(size, Math.floor(Math.random() * PARTICLE_COLORS.length)),
 				pulseSpeed: 0.5 + Math.random() * 1.5,
 				pulseOffset: Math.random() * Math.PI * 2
 			});
@@ -239,20 +248,24 @@
 	}
 
 	function addMouseSprite(x, y) {
-		const size = 25 + Math.random() * 45;
+		const intensityChance = Math.min(1, mouseTrailIntensity);
+		if (Math.random() > intensityChance) return;
+
+		const size = 25 + Math.random() * 35;
 		const angle = Math.random() * Math.PI * 2;
-		const speed = 0.8 + Math.random() * 2.5;
+		const speed = 0.6 + Math.random() * 1.8;
 		mouseSprites.push({
 			x, y,
 			vx: Math.cos(angle) * speed,
 			vy: Math.sin(angle) * speed,
 			size,
 			alpha: 1,
-			texture: createGlowTexture(size, Math.floor(Math.random() * 5)),
-			life: 1.5 + Math.random() * 1.5
+			texture: createGlowTexture(size, Math.floor(Math.random() * PARTICLE_COLORS.length)),
+			life: 1.2 + Math.random()
 		});
 		// Limit
-		while (mouseSprites.length > 200) mouseSprites.shift();
+		const limit = Math.max(40, Math.round(BASE_MOUSE_LIMIT * mouseTrailIntensity));
+		while (mouseSprites.length > limit) mouseSprites.shift();
 	}
 
 	function updateMouseSprites(dt) {
@@ -276,8 +289,21 @@
 
 	// Heart animation
 	let heartAnimationTime = 0;
-	const HEART_DURATION = 2.5; // Reduced to ~3 seconds total with fade
+	const HEART_DURATION = 2.5; // Reduced duration (~3s incl. fade)
 	let isHeartFadingOut = false;
+	let hasHeartScattered = false;
+
+	function scatterHeartParticles() {
+		for (const p of particles) {
+			if (!p.active) continue;
+			const spread = 80 + Math.random() * 80;
+			const angle = Math.random() * Math.PI * 2;
+			p.velocity.x = Math.cos(angle) * spread;
+			p.velocity.y = Math.sin(angle) * spread;
+			p.acceleration.x = 0;
+			p.acceleration.y = 0;
+		}
+	}
 
 	function renderHeartAnimation(deltaTime) {
 		if (!heartImage || !heartImage.complete) return;
@@ -305,13 +331,17 @@
 			p.draw(ctx, heartImage);
 		}
 
-		// After duration, stop adding new particles but let existing ones fade out
+		// After duration, scatter and let existing particles fade out
 		if (heartAnimationTime >= HEART_DURATION && !isHeartFadingOut) {
+			if (!hasHeartScattered) {
+				scatterHeartParticles();
+				hasHeartScattered = true;
+			}
 			isHeartFadingOut = true;
-			// Wait for particles to fully fade out before resetting
 			setTimeout(() => {
 				isHeartAnimating = false;
 				isHeartFadingOut = false;
+				hasHeartScattered = false;
 				heartAnimationTime = 0;
 				initParticlePool();
 			}, 1500);
@@ -333,6 +363,7 @@
 		cvHeight = canvas.parentElement.clientHeight;
 		canvas.width = cvWidth;
 		canvas.height = cvHeight;
+		initBackgroundSprites();
 	}
 
 	function render() {
@@ -375,7 +406,8 @@
 		const y = e.clientY - rect.top;
 		// Only add particles if mouse is over the canvas area
 		if (x >= 0 && x <= cvWidth && y >= 0 && y <= cvHeight) {
-			for (let i = 0; i < 2; i++) {
+			const iterations = Math.max(1, Math.round(mouseTrailIntensity * 2));
+			for (let i = 0; i < iterations; i++) {
 				addMouseSprite(x + (Math.random() - 0.5) * 20, y + (Math.random() - 0.5) * 20);
 			}
 		}
@@ -393,6 +425,8 @@
 		if (isHeartAnimating) return;
 		isHeartAnimating = true;
 		heartAnimationTime = 0;
+		isHeartFadingOut = false;
+		hasHeartScattered = false;
 		initParticlePool();
 
 		// Play both sounds - reset and play fresh each time
